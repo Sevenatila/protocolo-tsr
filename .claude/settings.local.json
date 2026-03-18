@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(tar -xzf projeto.tar.gz)",
+      "Bash(npm install)",
+      "Bash(npm run dev)",
+      "Bash(timeout 5)",
+      "Bash(git init)",
+      "Bash(git remote add origin https://github.com/Sevenatila/tsr.git)",
+      "Bash(git add -A)",
+      "Bash(cd:*)",
+      "Bash(curl:*)",
+      "Bash(cp:*)"
+    ],
+    "deny": [],
+    "ask": []
+  }
+}

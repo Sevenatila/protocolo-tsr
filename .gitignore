@@ -1,0 +1,16 @@
+node_modules
+dist
+.DS_Store
+server/public
+vite.config.ts.*
+*.tar.gz
+.config/replit/.semgrep/
+.vercel
+
+# Arquivos locais de referência
+Imagens/
+Inspirações/
+Prints/
+imagem*.avif
+imagem*.webp
+imagem*.png
