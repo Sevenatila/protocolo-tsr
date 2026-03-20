@@ -1,7 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, Star, Check, ArrowRight, Sparkles, Clock, Shield, TrendingUp, Award, Users, Loader2, Camera, ScanFace } from "lucide-react";
-import { Button } from "@/components/ui/button";
 
 type QuizAnswer = Record<string, string | string[]>;
 
@@ -454,7 +453,7 @@ export default function QuizPage() {
           transition={{ delay: 0.75, duration: 0.6 }}
           className="w-full"
         >
-          <Button
+          <button
             data-testid="button-start-quiz"
             onClick={goNext}
             className="w-full h-14 text-lg font-bold rounded-2xl text-white transition-all active:scale-95"
@@ -462,7 +461,7 @@ export default function QuizPage() {
           >
             Fazer meu diagnóstico grátis
             <ArrowRight className="w-5 h-5 ml-2" />
-          </Button>
+          </button>
           <p className="text-white/30 text-xs text-center mt-3">Leva apenas 2 minutos • 100% gratuito</p>
         </motion.div>
       </div>
@@ -605,7 +604,7 @@ export default function QuizPage() {
             );
           })}
         </div>
-        <Button
+        <button
           data-testid="button-next"
           onClick={goNext}
           disabled={selectedOptions.length === 0}
@@ -613,7 +612,7 @@ export default function QuizPage() {
           style={{ background: selectedOptions.length > 0 ? BTN_GREEN : undefined }}
         >
           Próximo
-        </Button>
+        </button>
       </div>
     );
   };
@@ -882,14 +881,14 @@ export default function QuizPage() {
           </motion.div>
         )}
         <div className="mt-auto w-full">
-          <Button
+          <button
             data-testid="button-next"
             onClick={goNext}
             className="w-full h-14 text-lg font-semibold rounded-2xl text-white"
             style={{ background: BTN_GREEN }}
           >
             {isPersonalization ? "Ver meu protocolo" : isStatementNoStructure || isStatementMoldavel ? "Entendi, continuar" : isSkinTypeIntro ? "Vamos!" : "Continuar"}
-          </Button>
+          </button>
         </div>
       </div>
     );
@@ -964,14 +963,14 @@ export default function QuizPage() {
             </motion.div>
           ))}
         </div>
-        <Button
+        <button
           data-testid="button-next"
           onClick={goNext}
           className="w-full h-14 text-lg font-semibold rounded-2xl text-white"
           style={{ background: BTN_GREEN }}
         >
           Próximo
-        </Button>
+        </button>
       </div>
     );
   };
@@ -1067,13 +1066,13 @@ export default function QuizPage() {
             transition={{ delay: 0.3 }}
             className="w-full max-w-xs space-y-3"
           >
-            <Button
+            <button
               onClick={() => fileInputRef.current?.click()}
               className="w-full h-14 text-lg font-bold rounded-2xl text-white transition-all active:scale-95 flex items-center justify-center gap-2"
               style={{ background: BTN_GREEN, boxShadow: `0 8px 28px ${BTN_GREEN}60` }}
             >
               <Camera className="w-5 h-5" /> Tirar selfie
-            </Button>
+            </button>
             <button
               onClick={handleSkipSelfie}
               className="w-full text-white/30 text-xs text-center py-2 hover:text-white/50 transition-colors"
