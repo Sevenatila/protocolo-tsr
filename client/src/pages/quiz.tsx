@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronLeft, Star, Check, ArrowRight, Sparkles, Clock, Shield, TrendingUp, Heart, Zap, Award, Mail, Users, Loader2, Camera, ScanFace } from "lucide-react";
+import { ChevronLeft, Star, Check, ArrowRight, Sparkles, Clock, Shield, TrendingUp, Award, Users, Loader2, Camera, ScanFace } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 type QuizAnswer = Record<string, string | string[]>;
@@ -219,61 +219,6 @@ function PulsingRing({ delay = 0 }: { delay?: number }) {
   );
 }
 
-function FaceShapeIcon({ shape, selected }: { shape: string; selected: boolean }) {
-  const outlineColor = selected ? LIGHT_GREEN : "#888";
-  const shapes: Record<string, JSX.Element> = {
-    oval: (
-      <svg viewBox="0 0 80 100" className="w-16 h-20">
-        <ellipse cx="40" cy="50" rx="28" ry="40" fill="none" stroke={outlineColor} strokeWidth="2" strokeDasharray="4 2" />
-        <circle cx="30" cy="42" r="2" fill={outlineColor} />
-        <circle cx="50" cy="42" r="2" fill={outlineColor} />
-        <path d="M 32 60 Q 40 68 48 60" fill="none" stroke={outlineColor} strokeWidth="1.5" />
-      </svg>
-    ),
-    square: (
-      <svg viewBox="0 0 80 100" className="w-16 h-20">
-        <rect x="12" y="15" width="56" height="70" rx="12" fill="none" stroke={outlineColor} strokeWidth="2" strokeDasharray="4 2" />
-        <circle cx="30" cy="42" r="2" fill={outlineColor} />
-        <circle cx="50" cy="42" r="2" fill={outlineColor} />
-        <path d="M 32 60 Q 40 68 48 60" fill="none" stroke={outlineColor} strokeWidth="1.5" />
-      </svg>
-    ),
-    round: (
-      <svg viewBox="0 0 80 100" className="w-16 h-20">
-        <ellipse cx="40" cy="50" rx="32" ry="35" fill="none" stroke={outlineColor} strokeWidth="2" strokeDasharray="4 2" />
-        <circle cx="30" cy="45" r="2" fill={outlineColor} />
-        <circle cx="50" cy="45" r="2" fill={outlineColor} />
-        <path d="M 32 60 Q 40 66 48 60" fill="none" stroke={outlineColor} strokeWidth="1.5" />
-      </svg>
-    ),
-    diamond: (
-      <svg viewBox="0 0 80 100" className="w-16 h-20">
-        <path d="M 40 12 L 68 50 L 40 88 L 12 50 Z" fill="none" stroke={outlineColor} strokeWidth="2" strokeDasharray="4 2" />
-        <circle cx="30" cy="45" r="2" fill={outlineColor} />
-        <circle cx="50" cy="45" r="2" fill={outlineColor} />
-        <path d="M 32 58 Q 40 64 48 58" fill="none" stroke={outlineColor} strokeWidth="1.5" />
-      </svg>
-    ),
-    rectangular: (
-      <svg viewBox="0 0 80 100" className="w-16 h-20">
-        <rect x="16" y="8" width="48" height="84" rx="10" fill="none" stroke={outlineColor} strokeWidth="2" strokeDasharray="4 2" />
-        <circle cx="30" cy="42" r="2" fill={outlineColor} />
-        <circle cx="50" cy="42" r="2" fill={outlineColor} />
-        <path d="M 32 60 Q 40 68 48 60" fill="none" stroke={outlineColor} strokeWidth="1.5" />
-      </svg>
-    ),
-    triangle: (
-      <svg viewBox="0 0 80 100" className="w-16 h-20">
-        <path d="M 40 12 L 70 85 L 10 85 Z" fill="none" stroke={outlineColor} strokeWidth="2" strokeDasharray="4 2" />
-        <circle cx="32" cy="50" r="2" fill={outlineColor} />
-        <circle cx="48" cy="50" r="2" fill={outlineColor} />
-        <path d="M 34 65 Q 40 70 46 65" fill="none" stroke={outlineColor} strokeWidth="1.5" />
-      </svg>
-    ),
-  };
-  return shapes[shape] || null;
-}
-
 export default function QuizPage() {
   const [currentStep, setCurrentStep] = useState(0);
   const [answers, setAnswers] = useState<QuizAnswer>({});
@@ -282,12 +227,24 @@ export default function QuizPage() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [resultsSlide, setResultsSlide] = useState(0);
   const [bonusSlide, setBonusSlide] = useState(0);
+  const [countdown, setCountdown] = useState({ minutes: 14, seconds: 59 });
   useEffect(() => {
     if (QUIZ_STEPS[currentStep]?.type !== 'offer') return;
     const len = answers['gender'] === 'Homem' ? 3 : 5;
     const timer = setInterval(() => {
       setResultsSlide(s => (s + 1) % len);
     }, 5000);
+    return () => clearInterval(timer);
+  }, [currentStep]);
+  useEffect(() => {
+    if (QUIZ_STEPS[currentStep]?.type !== 'offer') return;
+    const timer = setInterval(() => {
+      setCountdown(prev => {
+        if (prev.minutes === 0 && prev.seconds === 0) return prev;
+        if (prev.seconds === 0) return { minutes: prev.minutes - 1, seconds: 59 };
+        return { ...prev, seconds: prev.seconds - 1 };
+      });
+    }, 1000);
     return () => clearInterval(timer);
   }, [currentStep]);
   const [selfiePreview, setSelfiePreview] = useState<string | null>(null);
@@ -415,75 +372,6 @@ export default function QuizPage() {
     );
   };
 
-  const renderSplash = () => (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 flex items-center justify-center bg-white"
-    >
-      <motion.img
-        src="/images/logo.webp"
-        alt="Protocolo Rosto Definido"
-        className="w-52 h-auto"
-        animate={{ scale: [1, 1.04, 1] }}
-        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-      />
-    </motion.div>
-  );
-
-  const renderPreloader = () => (
-    <motion.div
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      className="fixed inset-0 flex flex-col items-center bg-white"
-    >
-      <div className="w-full max-w-md mx-auto px-6 pt-10 pb-6 flex flex-col items-center">
-        {/* Logo */}
-        <img src="/images/logo.webp" alt="Protocolo Rosto Definido" className="w-36 h-auto mb-6" />
-
-        {/* Título */}
-        <h1 className="text-2xl font-bold text-gray-900 text-center mb-6 leading-tight">
-          Beleza Natural: Recupere seu<br />aspecto jovem e fresco
-        </h1>
-
-        {/* Barra de progresso */}
-        <div className="w-full mb-2">
-          <div className="w-full h-4 rounded-full overflow-hidden" style={{ background: "#e5e7eb" }}>
-            <motion.div
-              className="h-full rounded-full"
-              style={{ background: "#2e7d6e" }}
-              initial={{ width: "0%" }}
-              animate={{ width: "100%" }}
-              transition={{ duration: 3.2, ease: "easeInOut" }}
-            />
-          </div>
-        </div>
-
-        {/* Percentual animado + spinner */}
-        <div className="flex items-center gap-2 mb-8 self-start">
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-            className="w-4 h-4 border-2 rounded-full border-t-transparent"
-            style={{ borderColor: "#2e7d6e", borderTopColor: "transparent" }}
-          />
-          <span className="text-sm font-medium" style={{ color: "#2e7d6e" }}>Carregando o teste...</span>
-        </div>
-
-        {/* Imagem before/after */}
-        <div className="w-full flex justify-center">
-          <img
-            src="/images/mimika/pg1.webp"
-            alt="Antes e depois"
-            className="w-full max-w-sm object-contain"
-          />
-        </div>
-      </div>
-    </motion.div>
-  );
-
   const renderWelcome = () => (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -526,9 +414,9 @@ export default function QuizPage() {
           className="text-3xl font-bold text-white text-center mb-3 leading-tight"
           data-testid="text-welcome-title"
         >
-          Por que seu rosto parece{" "}
-          <span style={{ color: LIGHT_GREEN }}>10 anos mais velho</span>
-          {" "}do que sua idade real — e como reverter isso em 21 dias
+          Seu rosto pode parecer{" "}
+          <span style={{ color: LIGHT_GREEN }}>10 anos mais jovem</span>
+          {" "}em apenas 21 dias
         </motion.h1>
 
         <motion.p
@@ -589,74 +477,6 @@ export default function QuizPage() {
     }
   }, [currentStep, step.type, step.loadingDuration]);
 
-  const renderLoading = () => {
-    const texts = step.loadingTexts || ["Carregando..."];
-    const duration = step.loadingDuration || 3000;
-
-    return (
-      <div className="px-5 pt-16 pb-6 flex flex-col items-center min-h-[80vh] justify-center">
-        <div className="relative mb-10">
-          <motion.div
-            className="w-24 h-24 rounded-full flex items-center justify-center"
-            style={{ background: `${BTN_GREEN}40`, border: `2px solid ${LIGHT_GREEN}60` }}
-            animate={{ rotate: 360 }}
-            transition={{ duration: 3, repeat: Infinity, ease: "linear" }}
-          >
-            <Loader2 className="w-10 h-10" style={{ color: LIGHT_GREEN }} />
-          </motion.div>
-          <PulsingRing delay={0} />
-          <PulsingRing delay={0.6} />
-          <PulsingRing delay={1.2} />
-        </div>
-
-        <div className="space-y-4 w-full max-w-xs">
-          {texts.map((text, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: (duration / 1000 / texts.length) * i, duration: 0.5 }}
-              className="flex items-center gap-3"
-            >
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: (duration / 1000 / texts.length) * i + 0.3, type: "spring" }}
-                className="w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0"
-                style={{ background: `${BTN_GREEN}30`, border: `1px solid ${LIGHT_GREEN}50` }}
-              >
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: (duration / 1000 / texts.length) * i + 0.5 }}
-                >
-                  <Check className="w-3.5 h-3.5" style={{ color: LIGHT_GREEN }} />
-                </motion.div>
-              </motion.div>
-              <span className="text-white/70 text-sm font-medium">{text}</span>
-            </motion.div>
-          ))}
-        </div>
-
-        <motion.div
-          className="w-full max-w-xs mt-10"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-        >
-          <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
-            <motion.div
-              className="h-full rounded-full"
-              style={{ background: BTN_GREEN }}
-              initial={{ width: "0%" }}
-              animate={{ width: "100%" }}
-              transition={{ duration: duration / 1000, ease: "easeInOut" }}
-            />
-          </div>
-        </motion.div>
-      </div>
-    );
-  };
 
   const renderGenderQuestion = () => (
     <div className="px-5 pt-8 pb-6">
@@ -725,52 +545,6 @@ export default function QuizPage() {
     </div>
   );
 
-  const renderMultiQuestion = () => (
-    <div className="px-5 pt-8 pb-6">
-      <h2 data-testid="text-question" className="text-2xl font-bold text-white text-center mb-2 leading-tight">{step.question}</h2>
-      {step.subtitle && <p className="text-white/40 text-sm text-center mb-6">{step.subtitle}</p>}
-      <div className="space-y-3 mb-8">
-        {step.options?.map((opt, i) => {
-          const isSelected = selectedOptions.includes(opt.label);
-          return (
-            <motion.button
-              key={opt.label}
-              data-testid={`option-${step.id}-${i}`}
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: i * 0.06 }}
-              onClick={() => toggleMulti(opt.label)}
-              className="w-full flex items-center gap-4 p-4 rounded-2xl border transition-all duration-200 text-left"
-              style={{
-                borderColor: isSelected ? `${LIGHT_GREEN}70` : 'rgba(255,255,255,0.1)',
-                background: isSelected ? `${BTN_GREEN}20` : 'rgba(255,255,255,0.03)',
-              }}
-            >
-              <div className="w-6 h-6 rounded-lg border-2 flex items-center justify-center flex-shrink-0 transition-all"
-                style={{
-                  borderColor: isSelected ? LIGHT_GREEN : 'rgba(255,255,255,0.3)',
-                  background: isSelected ? BTN_GREEN : 'transparent',
-                }}
-              >
-                {isSelected && <Check className="w-4 h-4 text-white" />}
-              </div>
-              {opt.emoji && <span className="text-2xl">{opt.emoji}</span>}
-              <span className="text-base font-medium transition-colors" style={{ color: isSelected ? LIGHT_GREEN : 'white' }}>{opt.label}</span>
-            </motion.button>
-          );
-        })}
-      </div>
-      <Button
-        data-testid="button-next"
-        onClick={goNext}
-        disabled={selectedOptions.length === 0}
-        className="w-full h-14 text-lg font-semibold rounded-2xl disabled:opacity-40 text-white"
-        style={{ background: selectedOptions.length > 0 ? BTN_GREEN : undefined }}
-      >
-        Próximo
-      </Button>
-    </div>
-  );
 
   const renderGridQuestion = () => {
     const hasImages = step.options?.some(opt => opt.image);
@@ -842,54 +616,6 @@ export default function QuizPage() {
     );
   };
 
-  const renderSkinColor = () => (
-    <div className="px-5 pt-8 pb-6">
-      <h2 data-testid="text-question" className="text-2xl font-bold text-white text-center mb-8 leading-tight">{step.question}</h2>
-      <div className="grid grid-cols-2 gap-4 mb-8">
-        {step.options?.map((opt, i) => (
-          <motion.button
-            key={opt.label}
-            data-testid={`option-${step.id}-${i}`}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.1 }}
-            onClick={() => selectSingle(opt.label)}
-            className="flex flex-col items-center gap-3 p-5 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all"
-            onMouseEnter={(e) => (e.currentTarget.style.borderColor = `${LIGHT_GREEN}50`)}
-            onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
-          >
-            <div className="w-16 h-16 rounded-full shadow-lg" style={{ backgroundColor: opt.icon }} />
-            <span className="text-white/80 text-sm font-medium text-center">{opt.label}</span>
-          </motion.button>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderFaceShape = () => (
-    <div className="px-5 pt-8 pb-6">
-      <h2 data-testid="text-question" className="text-2xl font-bold text-white text-center mb-8 leading-tight">{step.question}</h2>
-      <div className="grid grid-cols-2 gap-4 mb-8">
-        {step.options?.map((opt, i) => (
-          <motion.button
-            key={opt.label}
-            data-testid={`option-${step.id}-${i}`}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.08 }}
-            onClick={() => selectSingle(opt.label)}
-            className="flex flex-col items-center gap-2 p-4 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all"
-            onMouseEnter={(e) => (e.currentTarget.style.borderColor = `${LIGHT_GREEN}50`)}
-            onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
-          >
-            <FaceShapeIcon shape={opt.icon || ""} selected={false} />
-            <span className="text-white/80 text-sm font-medium">{opt.label}</span>
-          </motion.button>
-        ))}
-      </div>
-    </div>
-  );
-
   const renderAge = () => (
     <div className="px-5 pt-8 pb-6">
       <h2 data-testid="text-question" className="text-2xl font-bold text-white text-center mb-8 leading-tight">{step.question}</h2>
@@ -907,39 +633,6 @@ export default function QuizPage() {
             onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
           >
             <span className="text-white text-lg font-semibold">{opt.label}</span>
-          </motion.button>
-        ))}
-      </div>
-    </div>
-  );
-
-  const renderStatement = () => (
-    <div className="px-5 pt-6 pb-6">
-      {step.statementImage && (
-        <motion.div
-          initial={{ opacity: 0, scale: 0.95 }}
-          animate={{ opacity: 1, scale: 1 }}
-          className="w-full rounded-2xl overflow-hidden mb-6"
-        >
-          <img src={step.statementImage} alt="" className="w-full h-auto object-contain" />
-        </motion.div>
-      )}
-      <h2 data-testid="text-question" className="text-2xl font-bold text-white text-center leading-tight italic mb-8">{step.question}</h2>
-      <div className="space-y-3">
-        {step.options?.map((opt, i) => (
-          <motion.button
-            key={opt.label}
-            data-testid={`option-${step.id}-${i}`}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 + i * 0.1 }}
-            onClick={() => selectSingle(opt.label)}
-            className="w-full flex items-center gap-4 p-4 rounded-2xl border border-white/10 bg-white/5 hover:bg-white/10 transition-all text-left"
-            onMouseEnter={(e) => (e.currentTarget.style.borderColor = `${LIGHT_GREEN}50`)}
-            onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.1)')}
-          >
-            {opt.emoji && <span className="text-2xl">{opt.emoji}</span>}
-            <span className="text-white text-base font-medium">{opt.label}</span>
           </motion.button>
         ))}
       </div>
@@ -1200,124 +893,6 @@ export default function QuizPage() {
     );
   };
 
-  const renderSkinResults = () => (
-    <div className="px-5 pt-8 pb-6">
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-6"
-        style={{ background: `${BTN_GREEN}30`, border: `2px solid ${LIGHT_GREEN}50` }}
-      >
-        <Sparkles className="w-8 h-8" style={{ color: LIGHT_GREEN }} />
-      </motion.div>
-      <h2 data-testid="text-info-title" className="text-2xl font-bold text-white text-center mb-6 leading-tight">{step.infoTitle}</h2>
-      <div className="space-y-4 mb-8">
-        {[
-          { icon: <Heart className="w-5 h-5 text-pink-400" />, title: "Tipo de pele: Normal", desc: "Sua pele é equilibrada e saudável. Você pode facilmente adicionar novos cuidados à sua rotina de beleza.", color: "border-pink-500/20 bg-pink-500/5" },
-          { icon: <Sparkles className="w-5 h-5" style={{ color: LIGHT_GREEN }} />, title: "Cuidados com: Óleo de pêssego", desc: "Este óleo amaciará sua pele e a protegerá de fatores externos negativos.", isGreen: true },
-          { icon: <Shield className="w-5 h-5 text-blue-400" />, title: "Cor da pele: Tom médio", desc: "O SPF e o Hidratante devem ser incorporados na sua rotina. Não se esqueça de proteger sua pele!", color: "border-blue-500/20 bg-blue-500/5" },
-        ].map((item, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 + i * 0.15 }}
-            className={`p-4 rounded-2xl border ${!item.isGreen ? item.color : ''}`}
-            style={item.isGreen ? { borderColor: `${LIGHT_GREEN}30`, background: `${BTN_GREEN}10` } : undefined}
-          >
-            <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0">
-                {item.icon}
-              </div>
-              <div>
-                <p className="text-white font-semibold text-sm mb-1">{item.title}</p>
-                <p className="text-white/50 text-xs leading-relaxed">{item.desc}</p>
-              </div>
-            </div>
-          </motion.div>
-        ))}
-      </div>
-      <Button
-        data-testid="button-next"
-        onClick={goNext}
-        className="w-full h-14 text-lg font-semibold rounded-2xl text-white"
-        style={{ background: BTN_GREEN }}
-      >
-        Continuar
-      </Button>
-    </div>
-  );
-
-  const renderTimeline = () => (
-    <div className="px-5 pt-8 pb-6">
-      <h2 data-testid="text-info-title" className="text-2xl font-bold text-white text-center mb-8 leading-tight">
-        Veja mudanças visíveis em <span style={{ color: LIGHT_GREEN }}>4 semanas</span>
-      </h2>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.2 }}
-        className="relative p-6 rounded-2xl bg-white/5 border border-white/10 mb-6"
-      >
-        <svg viewBox="0 0 300 180" className="w-full">
-          <defs>
-            <linearGradient id="lineGrad" x1="0" y1="0" x2="1" y2="0">
-              <stop offset="0%" stopColor="#ef4444" />
-              <stop offset="40%" stopColor={AMBER} />
-              <stop offset="100%" stopColor={LIGHT_GREEN} />
-            </linearGradient>
-          </defs>
-          <line x1="40" y1="30" x2="40" y2="150" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4" />
-          <line x1="130" y1="30" x2="130" y2="150" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4" />
-          <line x1="220" y1="30" x2="220" y2="150" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4" />
-          <line x1="40" y1="150" x2="280" y2="150" stroke="rgba(255,255,255,0.2)" strokeWidth="1" />
-          <path d="M 40 140 Q 85 130 130 100 Q 175 75 220 55 Q 250 45 270 35" fill="none" stroke="url(#lineGrad)" strokeWidth="3" strokeLinecap="round" />
-          <circle cx="40" cy="140" r="6" fill="#ef4444" />
-          <circle cx="130" cy="100" r="5" fill={AMBER} />
-          <circle cx="220" cy="55" r="5" fill={LIGHT_GREEN} />
-          <circle cx="270" cy="35" r="7" fill={LIGHT_GREEN} stroke={LIGHT_GREEN} strokeWidth="2" />
-          <circle cx="270" cy="35" r="10" fill="none" stroke={LIGHT_GREEN} strokeWidth="1" opacity="0.3" />
-          <text x="40" y="165" fill="rgba(255,255,255,0.4)" fontSize="10" textAnchor="middle">2 sem</text>
-          <text x="130" y="165" fill="rgba(255,255,255,0.4)" fontSize="10" textAnchor="middle">3 sem</text>
-          <text x="220" y="165" fill="rgba(255,255,255,0.4)" fontSize="10" textAnchor="middle">4 sem</text>
-          <text x="15" y="55" fill="rgba(255,255,255,0.3)" fontSize="8" transform="rotate(-90, 15, 90)">Pele jovem</text>
-        </svg>
-        <div className="flex justify-between mt-2 text-xs">
-          <div className="text-red-400">
-            <p>Pele envelhecida</p>
-            <p>Rugas</p>
-          </div>
-          <div className="text-right" style={{ color: LIGHT_GREEN }}>
-            <p>Pele mais jovem</p>
-            <p>Sem rugas</p>
-          </div>
-        </div>
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="p-4 rounded-2xl mb-8"
-        style={{ background: `${BTN_GREEN}15`, border: `1px solid ${LIGHT_GREEN}25` }}
-      >
-        <div className="flex items-start gap-3">
-          <span className="text-xl">👍</span>
-          <div>
-            <p className="font-semibold text-sm" style={{ color: LIGHT_GREEN }}>Continue se movendo</p>
-            <p className="text-white/50 text-sm">Siga os exercícios do guia diariamente e desfrute de resultados duradouros</p>
-          </div>
-        </div>
-      </motion.div>
-      <Button
-        data-testid="button-next"
-        onClick={goNext}
-        className="w-full h-14 text-lg font-semibold rounded-2xl text-white"
-        style={{ background: BTN_GREEN }}
-      >
-        Ótimo!
-      </Button>
-    </div>
-  );
 
   const renderTestimonials = () => {
     const isMale = answers['gender'] === 'Homem';
@@ -1398,294 +973,6 @@ export default function QuizPage() {
       </div>
     );
   };
-
-  const renderComparison = () => (
-    <div className="px-5 pt-8 pb-6">
-      <h2 data-testid="text-info-title" className="text-2xl font-bold text-white text-center mb-2 leading-tight">
-        Veja os primeiros resultados em apenas <span style={{ color: LIGHT_GREEN }}>uma semana</span>!
-      </h2>
-      <div className="flex items-center justify-center gap-4 my-4 text-white/40 text-sm">
-        <span className="flex items-center gap-1"><Zap className="w-3 h-3" /> Baseado em pesquisa científica</span>
-        <span className="flex items-center gap-1"><Shield className="w-3 h-3" /> Com IA</span>
-      </div>
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ delay: 0.2 }}
-        className="relative p-6 rounded-2xl bg-white/5 border border-white/10 mb-4"
-      >
-        <svg viewBox="0 0 300 200" className="w-full">
-          <defs>
-            <linearGradient id="areaGrad" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor={ACCENT_GREEN} stopOpacity="0.3" />
-              <stop offset="100%" stopColor={ACCENT_GREEN} stopOpacity="0" />
-            </linearGradient>
-          </defs>
-          <line x1="50" y1="170" x2="280" y2="170" stroke="rgba(255,255,255,0.15)" strokeWidth="1" />
-          <line x1="50" y1="30" x2="50" y2="170" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4" />
-          <line x1="130" y1="30" x2="130" y2="170" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4" />
-          <line x1="220" y1="30" x2="220" y2="170" stroke="rgba(255,255,255,0.1)" strokeWidth="1" strokeDasharray="4" />
-          <path d="M 50 160 Q 90 140 130 100 Q 180 60 220 45 Q 250 38 270 30" fill="none" stroke={ACCENT_GREEN} strokeWidth="2.5" />
-          <path d="M 50 160 Q 90 140 130 100 Q 180 60 220 45 Q 250 38 270 30 L 270 170 L 50 170 Z" fill="url(#areaGrad)" />
-          <circle cx="50" cy="160" r="5" fill="#ef4444" />
-          <circle cx="130" cy="100" r="4" fill={AMBER} />
-          <circle cx="270" cy="30" r="6" fill={LIGHT_GREEN} />
-          <rect x="25" y="145" width="90" height="22" rx="6" fill="rgba(239,68,68,0.15)" stroke="rgba(239,68,68,0.3)" strokeWidth="1" />
-          <text x="70" y="160" fill="#fca5a5" fontSize="9" textAnchor="middle">Menos cansada?</text>
-          <rect x="90" y="82" width="110" height="22" rx="6" fill={`${AMBER}20`} stroke={`${AMBER}40`} strokeWidth="1" />
-          <text x="145" y="97" fill={AMBER} fontSize="9" textAnchor="middle">Um rosto definido</text>
-          <rect x="195" y="10" width="100" height="22" rx="6" fill={`${BTN_GREEN}40`} stroke={`${LIGHT_GREEN}60`} strokeWidth="1" />
-          <text x="245" y="24" fill={LIGHT_GREEN} fontSize="9" textAnchor="middle" fontWeight="bold">Êxito duradouro</text>
-          <text x="50" y="185" fill="rgba(255,255,255,0.4)" fontSize="9" textAnchor="middle">1 semana</text>
-          <text x="130" y="185" fill="rgba(255,255,255,0.4)" fontSize="9" textAnchor="middle">1 mês</text>
-          <text x="220" y="185" fill="rgba(255,255,255,0.4)" fontSize="9" textAnchor="middle">3 meses</text>
-        </svg>
-      </motion.div>
-      <div className="space-y-3 mb-8">
-        {[
-          { icon: <Clock className="w-4 h-4" />, text: "Veja resultados visíveis em poucas semanas e sinta-se bem" },
-          { icon: <Shield className="w-4 h-4" />, text: "Adaptado a qualquer estilo de vida agitado" },
-          { icon: <TrendingUp className="w-4 h-4" />, text: "Ajustado à sua agenda (dia ou noite)" },
-        ].map((item, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -10 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 + i * 0.1 }}
-            className="flex items-center gap-3 p-3 rounded-xl bg-white/5"
-          >
-            <div style={{ color: LIGHT_GREEN }}>{item.icon}</div>
-            <p className="text-white/70 text-sm">{item.text}</p>
-          </motion.div>
-        ))}
-      </div>
-      <Button
-        data-testid="button-next"
-        onClick={goNext}
-        className="w-full h-14 text-lg font-semibold rounded-2xl text-white"
-        style={{ background: BTN_GREEN }}
-      >
-        Continuar
-      </Button>
-    </div>
-  );
-
-  const renderFeatures = () => (
-    <div className="px-5 pt-8 pb-6">
-      <h2 data-testid="text-info-title" className="text-2xl font-bold text-white text-center mb-8 leading-tight">
-        Você vai se <span style={{ color: LIGHT_GREEN }}>livrar</span> de:
-      </h2>
-      <div className="grid grid-cols-2 gap-3 mb-6">
-        {[
-          { label: "Queda facial", image: "/images/mimika/facial-dropping.webp" },
-          { label: "Pálpebras caídas", image: "/images/mimika/drooping-eyelids.webp" },
-          { label: "Papada", image: "/images/mimika/double-chin.webp" },
-          { label: "Sulco nasolabial", image: "/images/mimika/nasolabial-fold.webp" },
-        ].map((item, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: i * 0.1 }}
-            className="p-3 rounded-2xl bg-white/5 border border-white/10 text-center overflow-hidden"
-          >
-            <div className="w-full h-20 rounded-xl overflow-hidden mb-2 bg-white">
-              <img src={item.image} alt={item.label} className="w-full h-full object-contain" loading="lazy" />
-            </div>
-            <p className="text-white/70 text-sm font-medium">{item.label}</p>
-          </motion.div>
-        ))}
-      </div>
-      <div className="mb-8">
-        <p className="text-white font-semibold text-base mb-4">Com base em seus dados, prevemos que:</p>
-        <div className="grid grid-cols-2 gap-3">
-          {[
-            { label: "Envelhecendo mais devagar", pct: 52 },
-            { label: "Hidratação da pele", pct: 78 },
-            { label: "Alívio da tensão facial", pct: 82 },
-            { label: "Melhoria do tom de pele", pct: 60 },
-          ].map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.3 + i * 0.1 }}
-            >
-              <p className="text-white/50 text-xs mb-1">{item.label}</p>
-              <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden mb-1">
-                <motion.div
-                  className="h-full rounded-full"
-                  style={{ background: BTN_GREEN }}
-                  initial={{ width: 0 }}
-                  animate={{ width: `${item.pct}%` }}
-                  transition={{ delay: 0.5 + i * 0.1, duration: 0.8 }}
-                />
-              </div>
-              <p className="font-bold text-sm" style={{ color: LIGHT_GREEN }}>{item.pct}%</p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-      <Button
-        data-testid="button-next"
-        onClick={goNext}
-        className="w-full h-14 text-lg font-semibold rounded-2xl text-white"
-        style={{ background: BTN_GREEN }}
-      >
-        Continuar
-      </Button>
-    </div>
-  );
-
-  const renderSteps = () => (
-    <div className="px-5 pt-8 pb-6">
-      <h2 data-testid="text-info-title" className="text-2xl font-bold text-white text-center mb-2 leading-tight">{step.infoTitle}</h2>
-      <p className="text-white/40 text-sm text-center mb-8">{step.infoSubtitle}</p>
-      <div className="space-y-4 mb-8">
-        {[
-          { step: "Passo 1", title: "Obtenha resultados visíveis", color: `${BTN_GREEN}25`, border: `${LIGHT_GREEN}40` },
-          { step: "Passo 2", title: "Reforce as mudanças", color: `${AMBER}10`, border: `${AMBER}40` },
-          { step: "Passo 3", title: "Apaixone-se pelo seu reflexo", color: `${BTN_GREEN}20`, border: `${LIGHT_GREEN}30` },
-        ].map((item, i) => (
-          <motion.div
-            key={i}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: i * 0.15 }}
-            className="p-5 rounded-2xl"
-            style={{ background: item.color, border: `1px solid ${item.border}` }}
-          >
-            <span className="text-xs font-bold uppercase tracking-wider" style={{ color: LIGHT_GREEN }}>{item.step}</span>
-            <p className="text-white font-semibold text-base mt-1">{item.title}</p>
-          </motion.div>
-        ))}
-      </div>
-      <div className="mb-8">
-        <p className="text-white font-semibold text-base mb-4">Seu programa é</p>
-        <div className="space-y-3">
-          {[
-            { num: "1", text: "Com base nos dados que você forneceu" },
-            { num: "2", text: "Feito sob medida para melhorar significativamente a pele" },
-            { num: "3", text: "Projetado para garantir resultados duradouros por meio de orientação sobre cuidados com a pele" },
-          ].map((item, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.4 + i * 0.1 }}
-              className="flex items-start gap-3"
-            >
-              <span className="font-bold text-sm flex-shrink-0" style={{ color: LIGHT_GREEN }}>{item.num}.</span>
-              <p className="text-white/60 text-sm font-semibold">{item.text}</p>
-            </motion.div>
-          ))}
-        </div>
-      </div>
-      <Button
-        data-testid="button-next"
-        onClick={goNext}
-        className="w-full h-14 text-lg font-semibold rounded-2xl text-white"
-        style={{ background: BTN_GREEN }}
-      >
-        Continuar
-      </Button>
-    </div>
-  );
-
-  const renderEmail = () => (
-    <div className="px-5 pt-12 pb-6 flex flex-col items-center min-h-[70vh]">
-      <motion.div
-        initial={{ scale: 0.8, opacity: 0 }}
-        animate={{ scale: 1, opacity: 1 }}
-        className="w-20 h-20 rounded-2xl flex items-center justify-center mb-6"
-        style={{ background: `${BTN_GREEN}30`, border: `1px solid ${LIGHT_GREEN}40` }}
-      >
-        <Mail className="w-9 h-9" style={{ color: LIGHT_GREEN }} />
-      </motion.div>
-      <motion.h2
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.1 }}
-        className="text-2xl md:text-3xl font-bold text-white text-center mb-2 leading-tight"
-        data-testid="text-email-title"
-      >
-        Receba seu <span style={{ color: LIGHT_GREEN }}>Guia PDF</span> Personalizado
-      </motion.h2>
-      <motion.p
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="text-white/40 text-base text-center mb-8 max-w-sm"
-      >
-        {step.infoSubtitle}
-      </motion.p>
-      <motion.div
-        initial={{ y: 20, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ delay: 0.3 }}
-        className="w-full mb-4"
-      >
-        <div className="relative">
-          <Mail className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-white/30" />
-          <input
-            data-testid="input-email"
-            type="email"
-            placeholder="Seu e-mail"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            className="w-full h-14 pl-12 pr-4 rounded-2xl bg-white/5 text-white placeholder:text-white/30 focus:outline-none transition-all text-base"
-            style={{ border: `1px solid rgba(255,255,255,0.15)` }}
-            onFocus={(e) => (e.currentTarget.style.borderColor = `${LIGHT_GREEN}50`)}
-            onBlur={(e) => (e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)')}
-          />
-        </div>
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.4 }}
-        className="flex items-center gap-2 mb-6"
-      >
-        <span className="text-white/40 text-sm"><strong className="text-white/60">2+ milhões</strong> de pessoas transformadas</span>
-      </motion.div>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.5 }}
-        className="w-full space-y-2 mb-6"
-      >
-        {[
-          "Guia PDF completo com exercícios ilustrados",
-          "Plano personalizado de 4 semanas",
-          "Dicas de skincare para seu tipo de pele",
-        ].map((text, i) => (
-          <div key={i} className="flex items-center gap-2">
-            <Check className="w-4 h-4 flex-shrink-0" style={{ color: LIGHT_GREEN }} />
-            <span className="text-white/50 text-sm">{text}</span>
-          </div>
-        ))}
-      </motion.div>
-      <div className="mt-auto w-full">
-        <p className="text-white/20 text-xs text-center mb-4">
-          Ao enviar, você concorda com nossa Política de Privacidade. Respeitamos sua privacidade.
-        </p>
-        <Button
-          data-testid="button-submit-email"
-          onClick={() => {
-            if (email) goNext();
-          }}
-          disabled={!email || !email.includes("@")}
-          className="w-full h-14 text-lg font-semibold rounded-2xl disabled:opacity-40 text-white"
-          style={{
-            background: email && email.includes("@") ? BTN_GREEN : undefined,
-            boxShadow: email && email.includes("@") ? `0 8px 24px ${BTN_GREEN}40` : undefined,
-          }}
-        >
-          Receber meu Guia PDF
-        </Button>
-      </div>
-    </div>
-  );
 
   const selfieLoadingTexts = [
     "Detectando estrutura facial...",
@@ -1929,7 +1216,7 @@ export default function QuizPage() {
         </div>
         <p className="text-white/40 text-sm mb-5">ou <strong className="text-white">R$ 19,99</strong> à vista</p>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-4" style={{ background: `${AMBER}20`, color: AMBER }}>
-          <Clock className="w-3 h-3" /> Só até hoje por esse preço
+          <Clock className="w-3 h-3" /> Oferta expira em {String(countdown.minutes).padStart(2, '0')}:{String(countdown.seconds).padStart(2, '0')}
         </div>
         <a
           href="https://checkout.protocolotsr.shop/VCCL1O8SCVP1"
@@ -1967,7 +1254,7 @@ export default function QuizPage() {
         </div>
         <p className="text-white/40 text-sm mb-5">ou <strong className="text-white">R$ 19,99</strong> à vista</p>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-4" style={{ background: `${AMBER}20`, color: AMBER }}>
-          <Clock className="w-3 h-3" /> Só até hoje por esse preço
+          <Clock className="w-3 h-3" /> Oferta expira em {String(countdown.minutes).padStart(2, '0')}:{String(countdown.seconds).padStart(2, '0')}
         </div>
         <button
           onClick={scrollToCta}
@@ -2484,45 +1771,18 @@ export default function QuizPage() {
 
   const renderCurrentStep = () => {
     switch (step.type) {
-      case "splash":
-        return renderSplash();
-      case "preloader":
-        return renderPreloader();
       case "info":
         return renderInfoScreen();
-      case "loading":
-        return renderLoading();
       case "gender":
         return renderGenderQuestion();
       case "single":
         return renderSingleQuestion();
-      case "multi":
-        return renderMultiQuestion();
       case "grid":
-      case "skin-problems":
         return renderGridQuestion();
-      case "skin-color":
-        return renderSkinColor();
-      case "face-shape":
-        return renderFaceShape();
       case "age":
         return renderAge();
-      case "statement":
-        return renderStatement();
-      case "results":
-        return renderSkinResults();
-      case "timeline":
-        return renderTimeline();
       case "testimonials":
         return renderTestimonials();
-      case "comparison":
-        return renderComparison();
-      case "features":
-        return renderFeatures();
-      case "steps":
-        return renderSteps();
-      case "email":
-        return renderEmail();
       case "selfie":
         return renderSelfie();
       case "offer":
@@ -2551,6 +1811,21 @@ export default function QuizPage() {
             </motion.div>
           </AnimatePresence>
         </div>
+        {step.type === "offer" && (
+          <div className="sticky bottom-0 z-50 px-4 py-3" style={{ background: `linear-gradient(to top, ${DARK_BG}, ${DARK_BG}ee, transparent)` }}>
+            <button
+              onClick={() => document.getElementById('cta-principal')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
+              className="flex items-center justify-center gap-2 w-full h-12 rounded-2xl text-white font-bold text-sm"
+              style={{ background: BTN_GREEN, boxShadow: `0 4px 20px ${BTN_GREEN}80` }}
+            >
+              QUERO MEU PROTOCOLO <ArrowRight className="w-4 h-4 flex-shrink-0" />
+            </button>
+            <p className="text-center text-white/30 text-xs mt-1">
+              <Clock className="w-3 h-3 inline mr-1" style={{ color: AMBER }} />
+              {String(countdown.minutes).padStart(2, '0')}:{String(countdown.seconds).padStart(2, '0')} restantes
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );
