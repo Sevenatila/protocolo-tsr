@@ -27,7 +27,7 @@ const QUIZ_STEPS: QuizStep[] = [
     id: "welcome",
     section: "",
     type: "info",
-    infoTitle: "Descubra por que seu rosto parece inchado e sem definição — mesmo fazendo de tudo",
+    infoTitle: "Por que seu rosto parece 10 anos mais velho do que sua idade real — e como reverter isso em 21 dias",
     infoSubtitle: "O diagnóstico leva 2 minutos. O protocolo personalizado transforma em 21 dias.",
   },
   {
@@ -36,8 +36,8 @@ const QUIZ_STEPS: QuizStep[] = [
     type: "gender",
     question: "Você é?",
     options: [
-      { label: "Mulher", image: "/images/mulher.png" },
-      { label: "Homem", image: "/images/homem.png" },
+      { label: "Mulher", image: "/images/mulher.webp" },
+      { label: "Homem", image: "/images/homem.webp" },
     ],
   },
   {
@@ -71,10 +71,10 @@ const QUIZ_STEPS: QuizStep[] = [
     question: "Qual dessas imagens mais te representa?",
     subtitle: "Selecione todas que se aplicam",
     options: [
-      { label: "Rosto sem definição", image: "/images/nosso-quiz/feminino/rosto-sem-definicao.webp", imageMale: "/images/nosso-quiz/masculino/rosto-sem-definicao.png" },
-      { label: "Papada e inchaço", image: "/images/nosso-quiz/feminino/papada-e-inchaco.webp", imageMale: "/images/nosso-quiz/masculino/papada-e-inchaco.png" },
-      { label: "Olhar pesado e cansado", image: "/images/nosso-quiz/feminino/olhar-pesado-e-cansado.webp", imageMale: "/images/nosso-quiz/masculino/olhar-pesado-e-cansado.webp" },
-      { label: "Flacidez facial", image: "/images/nosso-quiz/feminino/flacidez-facial.webp", imageMale: "/images/nosso-quiz/masculino/flacidez-facial.png" },
+      { label: "Rosto sem definição", image: "/images/nosso-quiz/feminino/full_face_fine_lines.webp", imageMale: "/images/nosso-quiz/masculino/rosto-inchado.webp" },
+      { label: "Papada e inchaço", image: "/images/nosso-quiz/feminino/papada-sen-seta.webp", imageMale: "/images/nosso-quiz/masculino/papada.webp" },
+      { label: "Olhar pesado e cansado", image: "/images/nosso-quiz/feminino/olheiras-setas-brancas.webp", imageMale: "/images/nosso-quiz/masculino/olheira.webp" },
+      { label: "Flacidez facial", image: "/images/nosso-quiz/feminino/queixo-setas-vermelha.webp", imageMale: "/images/nosso-quiz/masculino/flacidez-facial.webp" },
     ],
   },
   {
@@ -103,10 +103,10 @@ const QUIZ_STEPS: QuizStep[] = [
     question: "Qual área você mais quer transformar?",
     subtitle: "Selecione todas que se aplicam",
     options: [
-      { label: "Mandíbula e queixo", image: "/images/nosso-quiz/feminino/maxilar-e-queixo.png", imageMale: "/images/nosso-quiz/masculino/maxilar-e-queixo.png" },
-      { label: "Bochechas e maçãs", image: "/images/nosso-quiz/feminino/bochechas-e-macas.webp", imageMale: "/images/nosso-quiz/masculino/bochechas-e-macas.png" },
-      { label: "Olhos e olhar", image: "/images/nosso-quiz/feminino/olhos-e-olhar.webp", imageMale: "/images/nosso-quiz/masculino/olhos-e-olhar.webp" },
-      { label: "Rugas e sulcos", image: "/images/nosso-quiz/feminino/rugas-e-sulcos.webp", imageMale: "/images/nosso-quiz/masculino/rugas-e-sulcos.png" },
+      { label: "Mandíbula e queixo", image: "/images/nosso-quiz/feminino/queixo-setas-vermelha.webp", imageMale: "/images/nosso-quiz/masculino/mandibula-setas-brancas-man.webp" },
+      { label: "Bochechas e maçãs", image: "/images/nosso-quiz/feminino/macas-do-rosto-seta-branca.webp", imageMale: "/images/nosso-quiz/masculino/macas-do-rosto-setas-brancas-man.webp" },
+      { label: "Olhos e olhar", image: "/images/nosso-quiz/feminino/olhos-seta-branca.webp", imageMale: "/images/nosso-quiz/masculino/olhos-de-cacador.webp" },
+      { label: "Rugas e sulcos", image: "/images/nosso-quiz/feminino/rugas-na-testa.webp", imageMale: "/images/nosso-quiz/masculino/bigode-chines-setas-brancas.webp" },
     ],
   },
   {
@@ -126,8 +126,8 @@ const QUIZ_STEPS: QuizStep[] = [
     type: "info",
     infoTitle: "Seu rosto é moldável.",
     infoSubtitle: "Assim como um atleta esculpe o corpo com treino, <strong class='text-white'>você pode esculpir seu rosto</strong> com os exercícios certos. <strong class='text-white'>Sem cirurgia. Sem botox.</strong>",
-    statementImage: "/images/nosso-quiz/feminino/seu-rosto-e-moldavel.png",
-    statementImageMale: "/images/nosso-quiz/masculino/seu-rosto-e-moldavel.jpg",
+    statementImage: "/images/nosso-quiz/feminino/seu-rosto-e-moldavel.webp",
+    statementImageMale: "/images/nosso-quiz/masculino/seu-rosto-e-moldavel.webp",
   },
   {
     id: "commitment",
@@ -284,7 +284,7 @@ export default function QuizPage() {
   const [bonusSlide, setBonusSlide] = useState(0);
   useEffect(() => {
     if (QUIZ_STEPS[currentStep]?.type !== 'offer') return;
-    const len = answers['gender'] === 'Homem' ? 3 : 3;
+    const len = answers['gender'] === 'Homem' ? 3 : 5;
     const timer = setInterval(() => {
       setResultsSlide(s => (s + 1) % len);
     }, 5000);
@@ -375,19 +375,21 @@ export default function QuizPage() {
         className="sticky top-0 z-50 px-4 pt-3 pb-3"
         style={{ background: HEADER_BG }}
       >
-        <div className="relative flex items-center justify-center mb-3">
-          {currentStep > 0 && (
-            <button
-              data-testid="button-back"
-              onClick={goBack}
-              className="absolute left-0 w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
-            >
-              <ChevronLeft className="w-5 h-5 text-white/70" />
-            </button>
-          )}
+        <div className="flex items-center justify-between mb-3">
+          <div className="flex items-center w-8">
+            {currentStep > 0 && (
+              <button
+                data-testid="button-back"
+                onClick={goBack}
+                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 transition-colors"
+              >
+                <ChevronLeft className="w-5 h-5 text-white/70" />
+              </button>
+            )}
+          </div>
           <span className="text-white/70 text-sm font-semibold">{step.section || "Progresso"}</span>
-          <div className="absolute right-0 flex items-center gap-1.5">
-            <span className="text-white/50 text-xs font-medium tracking-wide">#1 em Definição Facial</span>
+          <div className="flex items-center gap-1.5">
+            <span className="text-white/50 text-xs font-medium tracking-wide whitespace-nowrap">#1 em Definição Facial</span>
             <Star className="w-3.5 h-3.5 fill-current" style={{ color: AMBER }} />
             <span className="font-bold text-sm" style={{ color: AMBER }}>4.8</span>
           </div>
@@ -421,7 +423,7 @@ export default function QuizPage() {
       className="fixed inset-0 flex items-center justify-center bg-white"
     >
       <motion.img
-        src="/images/logo.png"
+        src="/images/logo.webp"
         alt="Protocolo Rosto Definido"
         className="w-52 h-auto"
         animate={{ scale: [1, 1.04, 1] }}
@@ -439,7 +441,7 @@ export default function QuizPage() {
     >
       <div className="w-full max-w-md mx-auto px-6 pt-10 pb-6 flex flex-col items-center">
         {/* Logo */}
-        <img src="/images/logo.png" alt="Protocolo Rosto Definido" className="w-36 h-auto mb-6" />
+        <img src="/images/logo.webp" alt="Protocolo Rosto Definido" className="w-36 h-auto mb-6" />
 
         {/* Título */}
         <h1 className="text-2xl font-bold text-gray-900 text-center mb-6 leading-tight">
@@ -492,7 +494,7 @@ export default function QuizPage() {
       <div className="relative w-full">
         <div className="w-full overflow-hidden" style={{ maxHeight: "55vh" }}>
           <img
-            src="/images/mimika/welcome-loader-photos-2.png"
+            src="/images/mimika/welcome-loader-photos-2.webp"
             alt="Rostos felizes"
             className="w-full object-cover object-top"
             style={{ maxHeight: "55vh" }}
@@ -524,9 +526,9 @@ export default function QuizPage() {
           className="text-3xl font-bold text-white text-center mb-3 leading-tight"
           data-testid="text-welcome-title"
         >
-          Descubra por que seu rosto parece{" "}
-          <span style={{ color: LIGHT_GREEN }}>inchado e sem definição</span>
-          {" "}— mesmo fazendo de tudo
+          Por que seu rosto parece{" "}
+          <span style={{ color: LIGHT_GREEN }}>10 anos mais velho</span>
+          {" "}do que sua idade real — e como reverter isso em 21 dias
         </motion.h1>
 
         <motion.p
@@ -811,7 +813,7 @@ export default function QuizPage() {
                     <img
                       src={(opt.imageMale && answers['gender'] === 'Homem') ? opt.imageMale : opt.image}
                       alt={opt.label}
-                      className="w-full h-full object-contain"
+                      className="w-full h-full object-cover object-bottom"
                       loading="lazy"
                     />
                   </div>
@@ -966,7 +968,7 @@ export default function QuizPage() {
             <div className="relative w-64">
               <img
                 src={answers['gender'] === 'Homem'
-                  ? "/images/nosso-quiz/masculino/seu-mapa-facial-foi-gerado.png"
+                  ? "/images/nosso-quiz/masculino/seu-mapa-facial-foi-gerado.webp"
                   : "/images/nosso-quiz/feminino/seu-mapa-facial-foi-gerado.webp"}
                 alt="Zonas faciais"
                 className="w-full object-contain"
@@ -1089,7 +1091,7 @@ export default function QuizPage() {
           >
             <img
               src={answers['gender'] === 'Homem'
-                ? "/images/nosso-quiz/masculino/isso-nao-e-so-estetica.jpg"
+                ? "/images/nosso-quiz/masculino/isso-nao-e-so-estetica.webp"
                 : "/images/nosso-quiz/feminino/isso-nao-e-so-estetica.webp"}
               alt="Antes e depois"
               className="w-full h-auto object-contain"
@@ -1321,14 +1323,14 @@ export default function QuizPage() {
     const isMale = answers['gender'] === 'Homem';
     const quizTestimonials = isMale
       ? [
-          { name: "Carlos M.", age: "38 anos", stars: 5, img: "/images/wise/13V5l-argumentos-1.jpg", text: "Em 3 semanas meu maxilar ficou visivelmente mais definido. Minha esposa notou antes de mim! O protocolo é simples e encaixa na rotina sem esforço." },
-          { name: "Rafael S.", age: "34 anos", stars: 5, img: "/images/wise/IiF7f-argumentos-2.jpg", text: "Sempre tive papada e achei que era genética. Depois de 4 semanas seguindo o protocolo, a diferença é real. Rosto muito mais definido e aparência mais jovem." },
-          { name: "Lucas T.", age: "41 anos", stars: 5, img: "/images/wise/Ap7i9-argumentos-3.jpg", text: "Cara, em 10 dias já dava pra notar diferença. Agora com 21 dias, meu maxilar tá definido de verdade. Recomendo muito!" },
+          { name: "Carlos M.", age: "38 anos", stars: 5, img: "/images/wise/13V5l-argumentos-1.webp", text: "Em 3 semanas meu maxilar ficou visivelmente mais definido. Minha esposa notou antes de mim! O protocolo é simples e encaixa na rotina sem esforço." },
+          { name: "Rafael S.", age: "34 anos", stars: 5, img: "/images/wise/IiF7f-argumentos-2.webp", text: "Sempre tive papada e achei que era genética. Depois de 4 semanas seguindo o protocolo, a diferença é real. Rosto muito mais definido e aparência mais jovem." },
+          { name: "Lucas T.", age: "41 anos", stars: 5, img: "/images/wise/Ap7i9-argumentos-3.webp", text: "Cara, em 10 dias já dava pra notar diferença. Agora com 21 dias, meu maxilar tá definido de verdade. Recomendo muito!" },
         ]
       : [
-          { name: "Ana C.", age: "42 anos", stars: 5, img: "/images/nosso-quiz/feminino/dep1.jpg", text: "Todos os meus amigos dizem que fiquei mais jovem. Com os exercícios do TSR consegui tonificar os músculos faciais e ter contornos muito mais nítidos. Recomendo para todo mundo! 😍" },
-          { name: "Mariana S.", age: "27 anos", stars: 5, img: "/images/nosso-quiz/feminino/dep2.jpg", text: "Logo na primeira semana já notei redução do inchaço. Continuei seguindo o protocolo e agora tenho o rosto que sempre quis." },
-          { name: "Juliana T.", age: "38 anos", stars: 5, img: "/images/nosso-quiz/feminino/dep3.jpg", text: "Sempre tive um rosto mais redondo e isso me incomodava. Em 10 dias já dava para notar diferença. Com 21 dias, meu contorno está definido de verdade!" },
+          { name: "Ana C.", age: "42 anos", stars: 5, img: "/images/nosso-quiz/feminino/dep1.webp", text: "Todos os meus amigos dizem que fiquei mais jovem. Com os exercícios do TSR consegui tonificar os músculos faciais e ter contornos muito mais nítidos. Recomendo para todo mundo! 😍" },
+          { name: "Mariana S.", age: "27 anos", stars: 5, img: "/images/nosso-quiz/feminino/dep2.webp", text: "Logo na primeira semana já notei redução do inchaço. Continuei seguindo o protocolo e agora tenho o rosto que sempre quis." },
+          { name: "Juliana T.", age: "38 anos", stars: 5, img: "/images/nosso-quiz/feminino/dep3.webp", text: "Sempre tive um rosto mais redondo e isso me incomodava. Em 10 dias já dava para notar diferença. Com 21 dias, meu contorno está definido de verdade!" },
         ] as Array<{ name: string; age: string; stars: number; img?: string; text: string }>;
 
     return (
@@ -1345,8 +1347,8 @@ export default function QuizPage() {
         >
           <img
             src={isMale
-              ? "/images/nosso-quiz/masculino/depoimentos.jpg"
-              : "/images/nosso-quiz/feminino/depoimentos7.png"}
+              ? "/images/nosso-quiz/masculino/depoimentos.webp"
+              : "/images/nosso-quiz/feminino/depoimentos7.webp"}
             alt="Resultados alcançados"
             className="w-full h-auto object-contain"
           />
@@ -1903,13 +1905,55 @@ export default function QuizPage() {
     const isMale = answers['gender'] === 'Homem';
 
     const bonuses = [
-      { img: "/images/wise/zhRQX-bonus-01.jpg", title: "Guia de Ferramentas Faciais", desc: "Gua Sha, roller facial e mais ferramentas na palma da sua mão.", value: "R$ 47" },
-      { img: "/images/wise/hkqyg-bonus-02.jpg", title: "Ritual Matinal Anti-Inchaço", desc: "5 minutos para começar o dia com o rosto desinchado e definido.", value: "R$ 47" },
-      { img: isMale ? "/images/wise/5uQgD-bonus-03.jpg" : "/images/wise/checklist-feminina.png", title: isMale ? "Checklist de Presença Masculina" : "Checklist de Presença Feminina", desc: "Tudo que você precisa para transmitir confiança e presença.", value: "R$ 67" },
-      { img: "/images/wise/L03sj-bonus-04.jpg", title: "Plano de Manutenção Pós 21 Dias", desc: "Mantenha os resultados para sempre com esse guia de rotina.", value: "R$ 67" },
+      { img: "/images/wise/zhRQX-bonus-01.webp", title: "Guia de Ferramentas Faciais", desc: "Gua Sha, roller facial e mais ferramentas na palma da sua mão.", value: "R$ 47" },
+      { img: "/images/wise/hkqyg-bonus-02.webp", title: "Ritual Matinal Anti-Inchaço", desc: "5 minutos para começar o dia com o rosto desinchado e definido.", value: "R$ 47" },
+      { img: isMale ? "/images/wise/5uQgD-bonus-03.webp" : "/images/wise/checklist-feminina.webp", title: isMale ? "Checklist de Presença Masculina" : "Checklist de Presença Feminina", desc: "Tudo que você precisa para transmitir confiança e presença.", value: "R$ 67" },
+      { img: "/images/wise/L03sj-bonus-04.webp", title: "Plano de Manutenção Pós 21 Dias", desc: "Mantenha os resultados para sempre com esse guia de rotina.", value: "R$ 67" },
     ];
 
+    const scrollToCta = () => {
+      document.getElementById('cta-principal')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    };
+
     const ctaBlock = (
+      <div id="cta-principal" className="p-6 rounded-3xl text-center" style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${LIGHT_GREEN}30` }}>
+        <p className="text-white/50 text-sm mb-1">Acesso imediato ao</p>
+        <h3 className="text-xl font-bold text-white mb-1">Protocolo TSR</h3>
+        <p className="text-white/30 text-xs mb-4">+ 4 bônus exclusivos (valor total: R$ 228)</p>
+        <div className="mb-1">
+          <span className="text-white/30 text-sm line-through mr-2">R$ 147,00</span>
+        </div>
+        <div className="mb-1">
+          <span className="text-3xl font-bold text-white">4x de </span>
+          <span className="text-3xl font-bold" style={{ color: LIGHT_GREEN }}>R$ 5,84</span>
+        </div>
+        <p className="text-white/40 text-sm mb-5">ou <strong className="text-white">R$ 19,99</strong> à vista</p>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-4" style={{ background: `${AMBER}20`, color: AMBER }}>
+          <Clock className="w-3 h-3" /> Só até hoje por esse preço
+        </div>
+        <a
+          href="https://checkout.protocolotsr.shop/VCCL1O8SCVP1"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 w-full h-14 rounded-2xl text-white font-bold text-sm sm:text-base px-4 mb-3"
+          style={{ background: BTN_GREEN, boxShadow: `0 8px 28px ${BTN_GREEN}60` }}
+        >
+          QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5 flex-shrink-0" />
+        </a>
+        <div className="flex items-center justify-center gap-3">
+          <div className="flex items-center gap-1">
+            <Shield className="w-3 h-3" style={{ color: LIGHT_GREEN }} />
+            <span className="text-white/40 text-xs">Garantia 7 dias</span>
+          </div>
+          <div className="flex items-center gap-1">
+            <Check className="w-3 h-3" style={{ color: LIGHT_GREEN }} />
+            <span className="text-white/40 text-xs">Acesso vitalício</span>
+          </div>
+        </div>
+      </div>
+    );
+
+    const ctaBlockScroll = (
       <div className="p-6 rounded-3xl text-center" style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${LIGHT_GREEN}30` }}>
         <p className="text-white/50 text-sm mb-1">Acesso imediato ao</p>
         <h3 className="text-xl font-bold text-white mb-1">Protocolo TSR</h3>
@@ -1918,22 +1962,20 @@ export default function QuizPage() {
           <span className="text-white/30 text-sm line-through mr-2">R$ 147,00</span>
         </div>
         <div className="mb-1">
-          <span className="text-3xl font-bold text-white">12x de </span>
-          <span className="text-3xl font-bold" style={{ color: LIGHT_GREEN }}>R$ 3,00</span>
+          <span className="text-3xl font-bold text-white">4x de </span>
+          <span className="text-3xl font-bold" style={{ color: LIGHT_GREEN }}>R$ 5,84</span>
         </div>
-        <p className="text-white/40 text-sm mb-5">ou <strong className="text-white">R$ 29,90</strong> à vista</p>
+        <p className="text-white/40 text-sm mb-5">ou <strong className="text-white">R$ 19,99</strong> à vista</p>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-4" style={{ background: `${AMBER}20`, color: AMBER }}>
           <Clock className="w-3 h-3" /> Só até hoje por esse preço
         </div>
-        <a
-          href="https://pay.wiapy.com/U_KHEimayf"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="flex items-center justify-center gap-2 w-full h-14 rounded-2xl text-white font-bold text-lg mb-3"
+        <button
+          onClick={scrollToCta}
+          className="flex items-center justify-center gap-2 w-full h-14 rounded-2xl text-white font-bold text-sm sm:text-base px-4 mb-3"
           style={{ background: BTN_GREEN, boxShadow: `0 8px 28px ${BTN_GREEN}60` }}
         >
-          QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5" />
-        </a>
+          QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5 flex-shrink-0" />
+        </button>
         <div className="flex items-center justify-center gap-3">
           <div className="flex items-center gap-1">
             <Shield className="w-3 h-3" style={{ color: LIGHT_GREEN }} />
@@ -1977,7 +2019,7 @@ export default function QuizPage() {
         <div className="flex items-center gap-4 p-5 rounded-2xl"
           style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
         >
-          <img src="/images/wise/IAxfL-garantia-7-dias.png" alt="Garantia 7 dias" className="w-20 h-20 object-contain flex-shrink-0" />
+          <img src="/images/wise/IAxfL-garantia-7-dias.webp" alt="Garantia 7 dias" className="w-20 h-20 object-contain flex-shrink-0" />
           <div>
             <p className="text-white font-bold text-sm mb-1">Garantia de 7 Dias de Devolução</p>
             <p className="text-white/50 text-xs leading-relaxed mb-2">Se em 7 dias você não estiver satisfeito com os resultados, devolvemos 100% do seu dinheiro. Sem perguntas, sem burocracia.</p>
@@ -1990,15 +2032,15 @@ export default function QuizPage() {
     if (isMale) {
       // ── SCRIPT DE OURO (MASCULINO) ──
       const maleTestimonials = [
-        { img: "/images/nosso-quiz/masculino/novo1.jpg", name: "Marcos", age: "32 anos", text: "Achei que era minha genética. Em 10 dias de TSR, minha mandíbula apareceu. Minha namorada perguntou se eu fiz preenchimento." },
-        { img: "/images/nosso-quiz/masculino/novo2.jpg", name: "Felipe", age: "27 anos", text: "O inchaço matinal sumiu. Eu parecia um balão nas fotos, agora meu rosto tem ângulo. Valeu cada centavo." },
-        { img: "/images/wise/AqrzV-argumentos-4.jpg", name: "Thiago A.", age: "36 anos", text: "São 5 minutos por dia. Em menos de 3 semanas meu rosto ficou completamente diferente — mais definido, mais jovem, mais presente." },
+        { img: "/images/nosso-quiz/masculino/novo1.webp", name: "Marcos", age: "32 anos", text: "Achei que era minha genética. Em 10 dias de TSR, minha mandíbula apareceu. Minha namorada perguntou se eu fiz preenchimento." },
+        { img: "/images/nosso-quiz/masculino/novo2.webp", name: "Felipe", age: "27 anos", text: "O inchaço matinal sumiu. Eu parecia um balão nas fotos, agora meu rosto tem ângulo. Valeu cada centavo." },
+        { img: "/images/wise/AqrzV-argumentos-4.webp", name: "Thiago A.", age: "36 anos", text: "São 5 minutos por dia. Em menos de 3 semanas meu rosto ficou completamente diferente — mais definido, mais jovem, mais presente." },
       ];
 
       const maleResultImages = [
-        "/images/nosso-quiz/masculino/resultado-04.png",
+        "/images/nosso-quiz/masculino/resultado-04.webp",
         "/images/nosso-quiz/masculino/resultado-03.webp",
-        "/images/nosso-quiz/masculino/resultado-01.avif",
+        "/images/nosso-quiz/masculino/resultado-01.webp",
       ];
 
       const maleMetrics = [
@@ -2041,19 +2083,20 @@ export default function QuizPage() {
 
             {/* CTA primeira dobra */}
             <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="mb-6">
-              <a href="https://pay.wiapy.com/U_KHEimayf" target="_blank" rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 w-full h-14 rounded-2xl text-white font-bold text-lg"
+              <button
+                onClick={scrollToCta}
+                className="flex items-center justify-center gap-2 w-full h-14 rounded-2xl text-white font-bold text-sm sm:text-base px-4"
                 style={{ background: BTN_GREEN, boxShadow: `0 8px 28px ${BTN_GREEN}60` }}
               >
-                QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5" />
-              </a>
-              <p className="text-white/30 text-xs mt-2 text-center">Garantia 7 dias • Acesso imediato • R$29,90</p>
+                QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5 flex-shrink-0" />
+              </button>
+              <p className="text-white/30 text-xs mt-2 text-center">Garantia 7 dias • Acesso imediato • R$19,99</p>
             </motion.div>
 
             <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.35 }}
               className="rounded-2xl overflow-hidden border border-white/10 mb-6"
             >
-              <img src="/images/nosso-quiz/masculino/seu-rosto-e-moldavel.jpg" alt="Antes e depois" className="w-full h-auto" />
+              <img src="/images/nosso-quiz/masculino/seu-rosto-e-moldavel.webp" alt="Antes e depois" className="w-full h-auto" />
             </motion.div>
 
             {/* Métricas */}
@@ -2186,7 +2229,7 @@ export default function QuizPage() {
           {/* ── BÔNUS ── */}
           {bonusSection}
 
-          <div className="px-5 mb-6">{ctaBlock}</div>
+          <div className="px-5 mb-6">{ctaBlockScroll}</div>
 
           {/* ── GARANTIA ── */}
           {garantiaSection}
@@ -2222,17 +2265,19 @@ export default function QuizPage() {
 
     // ── OFERTA FEMININA ──
     const femaleTestimonials = [
-      { beforeAfter: "/images/nosso-quiz/feminino/depoimentos7.png", img: "/images/nosso-quiz/feminino/dep1.jpg", name: "Ana P.", age: "32 anos", text: "Eu evitava tirar fotos porque não gostava do meu rosto. Depois do protocolo, meu rosto ficou muito mais contornado e definido." },
-      { img: "/images/nosso-quiz/feminino/dep2.jpg", name: "Mariana S.", age: "27 anos", text: "Logo na primeira semana já notei redução do inchaço. Continuei seguindo o protocolo e agora tenho o rosto que sempre quis." },
-      { img: "/images/nosso-quiz/feminino/dep3.jpg", name: "Juliana T.", age: "38 anos", text: "Sempre tive um rosto mais redondo e isso me incomodava. Em 10 dias já dava para notar diferença. Com 21 dias, meu contorno está definido de verdade!" },
-      { img: "/images/nosso-quiz/feminino/dep4.jpg", name: "Camila R.", age: "34 anos", text: "Achei que seria complicado, mas é super simples. 15 minutos por dia e os resultados aparecem rápido. Meu rosto ficou muito mais bonito. Recomendo!" },
-      { img: "/images/nosso-quiz/feminino/dep5.jpg", name: "Fernanda G.", age: "41 anos", text: "No começo achei que era bobagem, mas resolvi testar. Depois de 2 semanas, minha amiga perguntou se eu tinha mudado algo. Funcionou mesmo!" },
+      { beforeAfter: "/images/nosso-quiz/feminino/depoimentos7.webp", img: "/images/nosso-quiz/feminino/dep1.webp", name: "Ana P.", age: "32 anos", text: "Eu evitava tirar fotos porque não gostava do meu rosto. Depois do protocolo, meu rosto ficou muito mais contornado e definido." },
+      { img: "/images/nosso-quiz/feminino/dep2.webp", name: "Mariana S.", age: "27 anos", text: "Logo na primeira semana já notei redução do inchaço. Continuei seguindo o protocolo e agora tenho o rosto que sempre quis." },
+      { img: "/images/nosso-quiz/feminino/dep3.webp", name: "Juliana T.", age: "38 anos", text: "Sempre tive um rosto mais redondo e isso me incomodava. Em 10 dias já dava para notar diferença. Com 21 dias, meu contorno está definido de verdade!" },
+      { img: "/images/nosso-quiz/feminino/dep4.webp", name: "Camila R.", age: "34 anos", text: "Achei que seria complicado, mas é super simples. 15 minutos por dia e os resultados aparecem rápido. Meu rosto ficou muito mais bonito. Recomendo!" },
+      { img: "/images/nosso-quiz/feminino/dep5.webp", name: "Fernanda G.", age: "41 anos", text: "No começo achei que era bobagem, mas resolvi testar. Depois de 2 semanas, minha amiga perguntou se eu tinha mudado algo. Funcionou mesmo!" },
     ] as Array<{ img?: string; beforeAfter?: string; name: string; age: string; text: string }>;
 
     const femaleResultImages = [
-      "/images/nosso-quiz/feminino/outra.webp",
-      "/images/nosso-quiz/feminino/outra1.webp",
-      "/images/nosso-quiz/feminino/outra2.webp",
+      "/images/nosso-quiz/feminino/reviews-1-slider-paywall.webp",
+      "/images/nosso-quiz/feminino/reviews-5-slider-paywall.webp",
+      "/images/nosso-quiz/feminino/reviews-3-slider-paywall.webp",
+      "/images/nosso-quiz/feminino/reviews-4-slider-paywall.webp",
+      "/images/nosso-quiz/feminino/reviews-2-slider-paywall.webp",
     ];
 
     const femaleMetrics = [
@@ -2274,19 +2319,20 @@ export default function QuizPage() {
 
           {/* CTA primeira dobra */}
           <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }} className="mb-6">
-            <a href="https://pay.wiapy.com/U_KHEimayf" target="_blank" rel="noopener noreferrer"
-              className="flex items-center justify-center gap-2 w-full h-14 rounded-2xl text-white font-bold text-lg"
+            <button
+              onClick={scrollToCta}
+              className="flex items-center justify-center gap-2 w-full h-14 rounded-2xl text-white font-bold text-sm sm:text-base px-4"
               style={{ background: BTN_GREEN, boxShadow: `0 8px 28px ${BTN_GREEN}60` }}
             >
-              QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5" />
-            </a>
-            <p className="text-white/30 text-xs mt-2 text-center">Garantia 7 dias • Acesso imediato • R$29,90</p>
+              QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5 flex-shrink-0" />
+            </button>
+            <p className="text-white/30 text-xs mt-2 text-center">Garantia 7 dias • Acesso imediato • R$19,99</p>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.35 }}
             className="rounded-2xl overflow-hidden border border-white/10 mb-6"
           >
-            <img src="/images/nosso-quiz/feminino/depoimentos6.png" alt="Antes e depois" className="w-full h-auto" />
+            <img src="/images/nosso-quiz/feminino/depoimentos6.webp" alt="Antes e depois" className="w-full h-auto" />
           </motion.div>
 
           {/* Métricas */}
@@ -2409,7 +2455,7 @@ export default function QuizPage() {
         </div>
 
         {bonusSection}
-        <div className="px-5 mb-6">{ctaBlock}</div>
+        <div className="px-5 mb-6">{ctaBlockScroll}</div>
         {garantiaSection}
 
         {/* FAQ feminino */}
