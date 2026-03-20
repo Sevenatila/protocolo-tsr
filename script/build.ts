@@ -1,6 +1,6 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
-import { rm, readFile } from "fs/promises";
+import { rm, readFile, writeFile } from "fs/promises";
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -37,6 +37,17 @@ async function buildAll() {
 
   console.log("building client...");
   await viteBuild();
+
+  // Make CSS non-render-blocking
+  const htmlPath = "dist/public/index.html";
+  let html = await readFile(htmlPath, "utf-8");
+  html = html.replace(
+    /<link rel="stylesheet" crossorigin href="(\/assets\/[^"]+\.css)">/g,
+    '<link rel="preload" as="style" href="$1" onload="this.rel=\'stylesheet\'">' +
+    '<noscript><link rel="stylesheet" href="$1"></noscript>'
+  );
+  await writeFile(htmlPath, html);
+  console.log("CSS made non-render-blocking");
 
   console.log("building server...");
   const pkg = JSON.parse(await readFile("package.json", "utf-8"));
