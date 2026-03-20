@@ -462,7 +462,7 @@ export default function QuizPage() {
             Fazer meu diagnóstico grátis
             <ArrowRight className="w-5 h-5 ml-2" />
           </button>
-          <p className="text-white/30 text-xs text-center mt-3">Leva apenas 2 minutos • 100% gratuito</p>
+          <p className="text-white/50 text-xs text-center mt-3">Leva apenas 2 minutos • 100% gratuito</p>
         </motion.div>
       </div>
     </motion.div>
@@ -1075,7 +1075,7 @@ export default function QuizPage() {
             </button>
             <button
               onClick={handleSkipSelfie}
-              className="w-full text-white/30 text-xs text-center py-2 hover:text-white/50 transition-colors"
+              className="w-full text-white/50 text-xs text-center py-2 hover:text-white/50 transition-colors"
             >
               Pular esta etapa
             </button>
@@ -1088,7 +1088,7 @@ export default function QuizPage() {
             className="flex items-center gap-2 mt-6"
           >
             <Shield className="w-3.5 h-3.5" style={{ color: LIGHT_GREEN }} />
-            <span className="text-white/30 text-xs">Sua foto não é armazenada nem compartilhada</span>
+            <span className="text-white/50 text-xs">Sua foto não é armazenada nem compartilhada</span>
           </motion.div>
         </>
       )}
@@ -1207,9 +1207,9 @@ export default function QuizPage() {
       <div id="cta-principal" className="p-6 rounded-3xl text-center" style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${LIGHT_GREEN}30` }}>
         <p className="text-white/50 text-sm mb-1">Acesso imediato ao</p>
         <h3 className="text-xl font-bold text-white mb-1">Protocolo TSR</h3>
-        <p className="text-white/30 text-xs mb-4">+ 4 bônus exclusivos (valor total: R$ 228)</p>
+        <p className="text-white/50 text-xs mb-4">+ 4 bônus exclusivos (valor total: R$ 228)</p>
         <div className="mb-1">
-          <span className="text-white/30 text-sm line-through mr-2">R$ 147,00</span>
+          <span className="text-white/50 text-sm line-through mr-2">R$ 147,00</span>
         </div>
         <div className="mb-1">
           <span className="text-3xl font-bold text-white">4x de </span>
@@ -1245,9 +1245,9 @@ export default function QuizPage() {
       <div className="p-6 rounded-3xl text-center" style={{ background: 'rgba(255,255,255,0.04)', border: `1px solid ${LIGHT_GREEN}30` }}>
         <p className="text-white/50 text-sm mb-1">Acesso imediato ao</p>
         <h3 className="text-xl font-bold text-white mb-1">Protocolo TSR</h3>
-        <p className="text-white/30 text-xs mb-4">+ 4 bônus exclusivos (valor total: R$ 228)</p>
+        <p className="text-white/50 text-xs mb-4">+ 4 bônus exclusivos (valor total: R$ 228)</p>
         <div className="mb-1">
-          <span className="text-white/30 text-sm line-through mr-2">R$ 147,00</span>
+          <span className="text-white/50 text-sm line-through mr-2">R$ 147,00</span>
         </div>
         <div className="mb-1">
           <span className="text-3xl font-bold text-white">4x de </span>
@@ -1293,7 +1293,7 @@ export default function QuizPage() {
               <div className="p-3">
                 <p className="text-white text-xs font-bold leading-snug mb-1">{bonus.title}</p>
                 <p className="text-white/40 text-xs leading-snug mb-2">{bonus.desc}</p>
-                <p className="text-white/30 text-xs line-through">De: {bonus.value}</p>
+                <p className="text-white/50 text-xs line-through">De: {bonus.value}</p>
                 <p className="text-xs font-bold" style={{ color: LIGHT_GREEN }}>Por: R$0</p>
               </div>
             </motion.div>
@@ -1378,7 +1378,7 @@ export default function QuizPage() {
               >
                 QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5 flex-shrink-0" />
               </button>
-              <p className="text-white/30 text-xs mt-2 text-center">Garantia 7 dias • Acesso imediato • R$19,99</p>
+              <p className="text-white/50 text-xs mt-2 text-center">Garantia 7 dias • Acesso imediato • R$19,99</p>
             </motion.div>
 
             <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.35 }}
@@ -1614,7 +1614,7 @@ export default function QuizPage() {
             >
               QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5 flex-shrink-0" />
             </button>
-            <p className="text-white/30 text-xs mt-2 text-center">Garantia 7 dias • Acesso imediato • R$19,99</p>
+            <p className="text-white/50 text-xs mt-2 text-center">Garantia 7 dias • Acesso imediato • R$19,99</p>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.35 }}
@@ -1794,7 +1794,7 @@ export default function QuizPage() {
   };
 
   return (
-    <div className="min-h-screen overflow-hidden" style={{ background: DARK_BG }}>
+    <main className="min-h-screen overflow-hidden" style={{ background: DARK_BG }}>
       <div className="max-w-md mx-auto min-h-screen flex flex-col" ref={containerRef}>
         {renderHeader()}
         <div className="flex-1 overflow-y-auto" ref={scrollRef}>
@@ -1821,13 +1821,13 @@ export default function QuizPage() {
             >
               QUERO MEU PROTOCOLO <ArrowRight className="w-4 h-4 flex-shrink-0" />
             </button>
-            <p className="text-center text-white/30 text-xs mt-1">
+            <p className="text-center text-white/50 text-xs mt-1">
               <Clock className="w-3 h-3 inline mr-1" style={{ color: AMBER }} />
               {String(countdown.minutes).padStart(2, '0')}:{String(countdown.seconds).padStart(2, '0')} restantes
             </p>
           </div>
         )}
       </div>
-    </div>
+    </main>
   );
 }

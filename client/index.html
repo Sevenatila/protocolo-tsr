@@ -2,7 +2,7 @@
 <html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5" />
     <title>Quiz de Cuidados Faciais | Descubra Seu Programa Personalizado</title>
     <meta name="description" content="Descubra seu tipo de pele e receba um programa personalizado de exercícios faciais. Resultados visíveis em 4 semanas." />
     <meta property="og:title" content="Quiz de Cuidados Faciais | Programa Personalizado" />
@@ -26,13 +26,13 @@
       #shell h1 span{color:#52c990}
       #shell p{color:rgba(255,255,255,.55);text-align:center;margin-bottom:1.5rem;padding:0 1.5rem}
       #shell .cta{width:calc(100% - 3rem);height:3.5rem;border-radius:1rem;background:#1e6b4a;color:#fff;font-weight:700;font-size:1.125rem;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;margin:0 1.5rem}
-      #shell .sub{color:rgba(255,255,255,.3);font-size:.75rem;text-align:center;margin-top:.75rem}
+      #shell .sub{color:rgba(255,255,255,.55);font-size:.75rem;text-align:center;margin-top:.75rem}
       .hidden{display:none}
     </style>
   </head>
   <body>
     <!-- Static shell shown instantly while React loads -->
-    <div id="shell">
+    <main id="shell">
       <div style="position:relative;width:100%">
         <img src="/images/mimika/welcome-loader-photos-2.webp" alt="Rostos felizes" class="hero-img" width="750" height="820" fetchpriority="high">
         <div class="grad"></div>
@@ -42,7 +42,7 @@
       <p>O diagnóstico leva 2 minutos. O protocolo personalizado transforma em 21 dias.</p>
       <button class="cta" aria-label="Começar diagnóstico">Fazer meu diagnóstico grátis →</button>
       <p class="sub">Leva apenas 2 minutos • 100% gratuito</p>
-    </div>
+    </main>
     <div id="root" class="hidden"></div>
     <script type="module" src="/src/main.tsx"></script>
     <script>
