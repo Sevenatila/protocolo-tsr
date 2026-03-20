@@ -1212,10 +1212,10 @@ export default function QuizPage() {
           <span className="text-white/50 text-sm line-through mr-2">R$ 147,00</span>
         </div>
         <div className="mb-1">
-          <span className="text-3xl font-bold text-white">4x de </span>
-          <span className="text-3xl font-bold" style={{ color: LIGHT_GREEN }}>R$ 5,84</span>
+          <span className="text-3xl font-bold text-white">12x de </span>
+          <span className="text-3xl font-bold" style={{ color: LIGHT_GREEN }}>R$ 5,32</span>
         </div>
-        <p className="text-white/40 text-sm mb-5">ou <strong className="text-white">R$ 19,99</strong> à vista</p>
+        <p className="text-white/40 text-sm mb-5">ou <strong className="text-white">R$ 39,90</strong> à vista</p>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-4" style={{ background: `${AMBER}20`, color: AMBER }}>
           <Clock className="w-3 h-3" /> Oferta expira em {String(countdown.minutes).padStart(2, '0')}:{String(countdown.seconds).padStart(2, '0')}
         </div>
@@ -1250,10 +1250,10 @@ export default function QuizPage() {
           <span className="text-white/50 text-sm line-through mr-2">R$ 147,00</span>
         </div>
         <div className="mb-1">
-          <span className="text-3xl font-bold text-white">4x de </span>
-          <span className="text-3xl font-bold" style={{ color: LIGHT_GREEN }}>R$ 5,84</span>
+          <span className="text-3xl font-bold text-white">12x de </span>
+          <span className="text-3xl font-bold" style={{ color: LIGHT_GREEN }}>R$ 5,32</span>
         </div>
-        <p className="text-white/40 text-sm mb-5">ou <strong className="text-white">R$ 19,99</strong> à vista</p>
+        <p className="text-white/40 text-sm mb-5">ou <strong className="text-white">R$ 39,90</strong> à vista</p>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-4" style={{ background: `${AMBER}20`, color: AMBER }}>
           <Clock className="w-3 h-3" /> Oferta expira em {String(countdown.minutes).padStart(2, '0')}:{String(countdown.seconds).padStart(2, '0')}
         </div>
@@ -1378,7 +1378,7 @@ export default function QuizPage() {
               >
                 QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5 flex-shrink-0" />
               </button>
-              <p className="text-white/50 text-xs mt-2 text-center">Garantia 7 dias • Acesso imediato • R$19,99</p>
+              <p className="text-white/50 text-xs mt-2 text-center">Garantia 7 dias • Acesso imediato • R$39,90</p>
             </motion.div>
 
             <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.35 }}
