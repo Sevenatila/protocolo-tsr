@@ -384,6 +384,8 @@ export default function QuizPage() {
           <img
             src="/images/mimika/welcome-loader-photos-2.webp"
             alt="Rostos felizes"
+            width={750}
+            height={820}
             className="w-full object-cover object-top"
             style={{ maxHeight: "55vh" }}
           />
