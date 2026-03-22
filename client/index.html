@@ -10,13 +10,14 @@
     <link rel="icon" type="image/webp" href="/favicon.webp" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-    <noscript><link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet"></noscript>
+    <link rel="preconnect" href="https://cdn.utmify.com.br">
+    <link rel="preconnect" href="https://tracking.utmify.com.br">
+    <link rel="preload" as="image" href="/images/mulher-novo.webp">
+    <link rel="preload" as="image" href="/images/homem-novo.webp">
     <style>
       /* Critical CSS - renders immediately before JS loads */
       *{margin:0;padding:0;box-sizing:border-box}
-      body{background:#111111;color:#fff;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
+      body{background:#111111;color:#fff;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
       #shell{min-height:100vh;display:flex;align-items:center;justify-content:center;max-width:28rem;margin:0 auto;padding:1.5rem 2rem}
       .shell-container{width:100%}
       #shell h1{font-size:1.875rem;font-weight:900;text-align:center;margin-bottom:1.5rem;line-height:1.2;color:#fff}
@@ -44,13 +45,13 @@
         <div class="gender-buttons">
           <div class="gender-option">
             <div class="gender-card">
-              <img src="/images/mulher-novo.webp" alt="Feminino" class="gender-img">
+              <img src="/images/mulher-novo.webp" alt="Feminino" class="gender-img" loading="eager" fetchpriority="high">
             </div>
             <p class="gender-label">Feminino</p>
           </div>
           <div class="gender-option">
             <div class="gender-card">
-              <img src="/images/homem-novo.webp" alt="Masculino" class="gender-img">
+              <img src="/images/homem-novo.webp" alt="Masculino" class="gender-img" loading="eager" fetchpriority="high">
             </div>
             <p class="gender-label">Masculino</p>
           </div>
@@ -72,14 +73,55 @@
       });
       observer.observe(document.getElementById('root'), { childList: true });
     </script>
-    <script src="https://cdn.utmify.com.br/scripts/utms/latest.js" data-utmify-prevent-xcod-sck data-utmify-prevent-subids async defer></script>
     <script>
-      window.pixelId = "69b83477eb660d7c78ad1280";
-      var a = document.createElement("script");
-      a.setAttribute("async", "");
-      a.setAttribute("defer", "");
-      a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
-      document.head.appendChild(a);
+      // Delay loading tracking scripts
+      if (window.requestIdleCallback) {
+        requestIdleCallback(() => {
+          // Load UTMify
+          const utmScript = document.createElement('script');
+          utmScript.src = 'https://cdn.utmify.com.br/scripts/utms/latest.js';
+          utmScript.setAttribute('data-utmify-prevent-xcod-sck', '');
+          utmScript.setAttribute('data-utmify-prevent-subids', '');
+          utmScript.async = true;
+          document.body.appendChild(utmScript);
+
+          // Load pixel
+          window.pixelId = "69b83477eb660d7c78ad1280";
+          const pixelScript = document.createElement("script");
+          pixelScript.async = true;
+          pixelScript.defer = true;
+          pixelScript.src = "https://cdn.utmify.com.br/scripts/pixel/pixel.js";
+          document.head.appendChild(pixelScript);
+        });
+      } else {
+        // Fallback for browsers without requestIdleCallback
+        setTimeout(() => {
+          const utmScript = document.createElement('script');
+          utmScript.src = 'https://cdn.utmify.com.br/scripts/utms/latest.js';
+          utmScript.setAttribute('data-utmify-prevent-xcod-sck', '');
+          utmScript.setAttribute('data-utmify-prevent-subids', '');
+          utmScript.async = true;
+          document.body.appendChild(utmScript);
+
+          window.pixelId = "69b83477eb660d7c78ad1280";
+          const pixelScript = document.createElement("script");
+          pixelScript.async = true;
+          pixelScript.defer = true;
+          pixelScript.src = "https://cdn.utmify.com.br/scripts/pixel/pixel.js";
+          document.head.appendChild(pixelScript);
+        }, 2000);
+      }
     </script>
+    <style>
+      @font-face {
+        font-family: 'Plus Jakarta Sans';
+        font-style: normal;
+        font-weight: 400 800;
+        font-display: swap;
+        src: url(https://fonts.gstatic.com/s/plusjakartasans/v7/LDIoaomQNQcsA88c7O9yZ4KMCoOg4Ko20ySJU.woff2) format('woff2');
+        unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+      }
+      body { font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
+    </style>
   </body>
 </html>
