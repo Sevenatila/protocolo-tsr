@@ -17,31 +17,46 @@
       /* Critical CSS - renders immediately before JS loads */
       *{margin:0;padding:0;box-sizing:border-box}
       body{background:#111111;color:#fff;font-family:'Plus Jakarta Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-font-smoothing:antialiased}
-      #shell{min-height:100vh;display:flex;flex-direction:column;align-items:center;max-width:28rem;margin:0 auto}
-      #shell .hero-img{width:100%;max-height:55vh;object-fit:cover;object-position:top}
-      #shell .grad{position:absolute;bottom:0;left:0;right:0;height:6rem;background:linear-gradient(to bottom,transparent,#111111)}
-      #shell .badge{position:absolute;top:1rem;left:0;right:0;display:flex;justify-content:center}
-      #shell .badge-inner{display:inline-flex;align-items:center;gap:.375rem;border-radius:9999px;padding:.375rem 1rem;background:#0d2219;border:1px solid rgba(82,201,144,.25);font-size:.75rem;font-weight:700;color:#f5b800}
-      #shell h1{font-size:1.875rem;font-weight:700;text-align:center;margin-bottom:.75rem;line-height:1.2;padding:0 1.5rem}
-      #shell h1 span{color:#52c990}
-      #shell p{color:rgba(255,255,255,.55);text-align:center;margin-bottom:1.5rem;padding:0 1.5rem}
-      #shell .cta{width:calc(100% - 3rem);height:3.5rem;border-radius:1rem;background:#1e6b4a;color:#fff;font-weight:700;font-size:1.125rem;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:.5rem;margin:0 1.5rem}
-      #shell .sub{color:rgba(255,255,255,.55);font-size:.75rem;text-align:center;margin-top:.75rem}
+      #shell{min-height:100vh;display:flex;align-items:center;justify-content:center;max-width:28rem;margin:0 auto;padding:1.5rem 2rem}
+      .shell-container{width:100%}
+      #shell h1{font-size:1.875rem;font-weight:900;text-align:center;margin-bottom:1.5rem;line-height:1.2;color:#fff}
+      .highlight-neutral{color:rgba(255,255,255,0.8)}
+      .highlight-danger{color:#fb7185}
+      #shell > div > p:first-of-type{color:rgba(255,255,255,0.8);text-align:center;margin-bottom:2.5rem;font-size:1.125rem;line-height:1.5}
+      .call-to-action{color:rgba(255,255,255,0.7);text-align:center;margin-bottom:2rem;font-size:1rem}
+      .gender-buttons{display:flex;gap:1rem;width:100%;margin-bottom:1rem}
+      .gender-option{flex:1;display:flex;flex-direction:column;align-items:center}
+      .gender-card{width:100%;height:10rem;border-radius:1rem;overflow:hidden;border:2px solid rgba(255,255,255,0.15);position:relative;transition:all 0.3s ease}
+      .gender-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:50% 20%}
+      .gender-label{color:#fff;font-weight:700;font-size:1.125rem;margin-top:0.75rem}
+      .subheadline{font-size:1.125rem;color:rgba(255,255,255,0.8);font-weight:600;white-space:nowrap}
+      .sub{color:rgba(255,255,255,0.3);font-size:0.75rem;text-align:center;margin-top:1rem}
       .hidden{display:none}
     </style>
   </head>
   <body>
     <!-- Static shell shown instantly while React loads -->
     <main id="shell">
-      <div style="position:relative;width:100%">
-        <img src="/images/mimika/welcome-loader-photos-2.webp" alt="Rostos felizes" class="hero-img" width="750" height="820" fetchpriority="high">
-        <div class="grad"></div>
-        <div class="badge"><div class="badge-inner">⭐ #1 em Definição Facial 4.8</div></div>
+      <div class="shell-container">
+        <h1>Por que <span class="highlight-neutral">dormir de lado</span> está <span class="highlight-danger">deformando seu rosto</span><br><span class="subheadline">(e como 3 exercícios simples revertem isso)</span></h1>
+        <p>Essa descoberta pode reverter danos faciais em 90 segundos por dia.</p>
+        <p class="call-to-action">Qual seu gênero?</p>
+        <div class="gender-buttons">
+          <div class="gender-option">
+            <div class="gender-card">
+              <img src="/images/mulher-novo.webp" alt="Feminino" class="gender-img">
+            </div>
+            <p class="gender-label">Feminino</p>
+          </div>
+          <div class="gender-option">
+            <div class="gender-card">
+              <img src="/images/homem-novo.webp" alt="Masculino" class="gender-img">
+            </div>
+            <p class="gender-label">Masculino</p>
+          </div>
+        </div>
+        <p class="sub">Teste gratuito • 90 segundos • Sem cadastro</p>
       </div>
-      <h1>Seu rosto pode parecer <span>10 anos mais jovem</span> em apenas 21 dias</h1>
-      <p>O diagnóstico leva 2 minutos. O protocolo personalizado transforma em 21 dias.</p>
-      <button class="cta" aria-label="Começar diagnóstico">Fazer meu diagnóstico grátis →</button>
-      <p class="sub">Leva apenas 2 minutos • 100% gratuito</p>
     </main>
     <div id="root" class="hidden"></div>
     <script type="module" src="/src/main.tsx"></script>

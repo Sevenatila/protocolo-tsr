@@ -1,13 +1,14 @@
 import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, Star, Check, ArrowRight, Sparkles, Clock, Shield, TrendingUp, Award, Users, Loader2, Camera, ScanFace } from "lucide-react";
+import { quizTracker } from "../lib/tracking";
 
 type QuizAnswer = Record<string, string | string[]>;
 
 interface QuizStep {
   id: string;
   section: string;
-  type: "single" | "multi" | "grid" | "info" | "email" | "offer" | "age" | "skin-color" | "skin-problems" | "face-shape" | "statement" | "results" | "timeline" | "comparison" | "steps" | "features" | "testimonials" | "loading" | "splash" | "preloader" | "gender" | "selfie";
+  type: "single" | "multi" | "grid" | "info" | "email" | "offer" | "age" | "skin-color" | "skin-problems" | "face-shape" | "statement" | "results" | "timeline" | "comparison" | "steps" | "features" | "testimonials" | "loading" | "splash" | "preloader" | "gender" | "selfie" | "welcome";
   question?: string;
   subtitle?: string;
   options?: Array<{ label: string; emoji?: string; icon?: string; image?: string; imageMale?: string }>;
@@ -26,18 +27,8 @@ const QUIZ_STEPS: QuizStep[] = [
     id: "welcome",
     section: "",
     type: "info",
-    infoTitle: "Por que seu rosto parece 10 anos mais velho do que sua idade real — e como reverter isso em 21 dias",
-    infoSubtitle: "O diagnóstico leva 2 minutos. O protocolo personalizado transforma em 21 dias.",
-  },
-  {
-    id: "gender",
-    section: "Perfil",
-    type: "gender",
-    question: "Você é?",
-    options: [
-      { label: "Mulher", image: "/images/mulher.webp" },
-      { label: "Homem", image: "/images/homem.webp" },
-    ],
+    infoTitle: "Por que dormir de lado está deformando seu rosto",
+    infoSubtitle: "A descoberta que pode reverter anos de danos faciais em 90 segundos por dia.",
   },
   {
     id: "age",
@@ -89,13 +80,6 @@ const QUIZ_STEPS: QuizStep[] = [
     ],
   },
   {
-    id: "statement-no-structure",
-    section: "Análise",
-    type: "info",
-    infoTitle: "Isso não é só estética.",
-    infoSubtitle: "Estudos mostram que <strong class='text-white'>rostos mais definidos são associados a mais confiança, presença e sucesso.</strong> Você está a poucos passos de descobrir o seu.",
-  },
-  {
     id: "face-goals",
     section: "Análise",
     type: "grid",
@@ -109,63 +93,15 @@ const QUIZ_STEPS: QuizStep[] = [
     ],
   },
   {
-    id: "attention",
-    section: "Análise",
-    type: "single",
-    question: "Como você se sente quando compara seu rosto com fotos de 2-3 anos atrás?",
-    options: [
-      { label: "Percebo que mudou muito", emoji: "😳" },
-      { label: "Sinto que perdi definição", emoji: "😞" },
-      { label: "Prefiro nem comparar", emoji: "🙈" },
-    ],
-  },
-  {
-    id: "statement-moldavel",
-    section: "Transformação",
-    type: "info",
-    infoTitle: "Seu rosto é moldável.",
-    infoSubtitle: "Assim como um atleta esculpe o corpo com treino, <strong class='text-white'>você pode esculpir seu rosto</strong> com os exercícios certos. <strong class='text-white'>Sem cirurgia. Sem botox.</strong>",
-    statementImage: "/images/nosso-quiz/feminino/seu-rosto-e-moldavel.webp",
-    statementImageMale: "/images/nosso-quiz/masculino/seu-rosto-e-moldavel.webp",
-  },
-  {
-    id: "commitment",
-    section: "Transformação",
-    type: "single",
-    question: "Você está disposto(a) a dedicar alguns minutos por dia para transformar seu rosto?",
-    options: [
-      { label: "Com certeza, quero começar agora", emoji: "🔥" },
-      { label: "Sim, se for simples e rápido", emoji: "⚡" },
-      { label: "Tenho dúvidas se funciona", emoji: "🤔" },
-    ],
-  },
-  {
-    id: "dedication-time",
-    section: "Transformação",
-    type: "single",
-    question: "Quanto tempo você consegue dedicar por dia?",
-    options: [
-      { label: "5 minutos", emoji: "⚡" },
-      { label: "10 minutos", emoji: "🎯" },
-      { label: "15 minutos", emoji: "🏋️" },
-    ],
-  },
-  {
-    id: "testimonials",
-    section: "Transformação",
-    type: "testimonials",
-    infoTitle: "Quem já transformou o rosto com TSR",
-  },
-  {
     id: "selfie",
-    section: "Resultados",
+    section: "Programa",
     type: "selfie",
     question: "Tire uma selfie para gerar seu diagnóstico facial",
     subtitle: "Sua foto será analisada para criar um protocolo 100% personalizado para o seu rosto.",
   },
   {
     id: "personalization",
-    section: "Resultados",
+    section: "Programa",
     type: "info",
     infoTitle: "Seu mapa facial foi gerado",
     infoSubtitle: "Identificamos as áreas com maior potencial de transformação no seu rosto.",
@@ -184,15 +120,13 @@ const CARD_BG = "rgba(255,255,255,0.05)";
 const CARD_BORDER = "rgba(255,255,255,0.1)";
 
 // Segment boundaries for 4-part progress bar
-// Steps: 0 welcome, 1 gender, 2 age, 3 insecurity, 4 face-pain, 5 social-impact,
-// 6 statement-no-structure, 7 face-goals, 8 attention, 9 statement-moldavel,
-// 10 commitment, 11 dedication-time, 12 testimonials, 13 selfie,
-// 14 personalization, 15 offer
+// Steps: 0 welcome, 1 age, 2 insecurity, 3 face-pain, 4 social-impact,
+// 5 face-goals, 6 explanation, 7 selfie, 8 personalization, 9 offer
 const SEGMENTS = [
-  { start: 1, end: 5, label: "Perfil" },
-  { start: 6, end: 8, label: "Análise" },
-  { start: 9, end: 12, label: "Transformação" },
-  { start: 13, end: 14, label: "Resultados" },
+  { start: 1, end: 4, label: "Perfil" },
+  { start: 5, end: 6, label: "Análise" },
+  { start: 7, end: 7, label: "Diagnóstico" },
+  { start: 8, end: 8, label: "Programa" },
 ];
 
 function getSegmentProgress(currentStep: number): { activeSegment: number; segmentFill: number } {
@@ -227,9 +161,31 @@ export default function QuizPage() {
   const [resultsSlide, setResultsSlide] = useState(0);
   const [bonusSlide, setBonusSlide] = useState(0);
   const [countdown, setCountdown] = useState({ minutes: 14, seconds: 59 });
+
+  // Track quiz start on mount and handle abandonment on unmount
+  useEffect(() => {
+    quizTracker.trackQuizStart(QUIZ_STEPS.length);
+
+    // Track abandonment when user leaves the page
+    const handleBeforeUnload = () => {
+      if (currentStep < QUIZ_STEPS.length - 1) {
+        quizTracker.trackQuizAbandon(QUIZ_STEPS[currentStep].id, currentStep, QUIZ_STEPS.length);
+      }
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+      // Track abandonment if quiz not completed
+      if (currentStep < QUIZ_STEPS.length - 1) {
+        quizTracker.trackQuizAbandon(QUIZ_STEPS[currentStep].id, currentStep, QUIZ_STEPS.length);
+      }
+    };
+  }, [currentStep]);
   useEffect(() => {
     if (QUIZ_STEPS[currentStep]?.type !== 'offer') return;
-    const len = answers['gender'] === 'Homem' ? 3 : 5;
+    const len = answers['gender'] === 'Masculino' ? 3 : 5;
     const timer = setInterval(() => {
       setResultsSlide(s => (s + 1) % len);
     }, 5000);
@@ -266,20 +222,35 @@ export default function QuizPage() {
     setSelfiePreview(null);
     setSelfieAnalyzing(false);
     scrollRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+
+    // Track section view
+    quizTracker.trackSectionView(step.id, currentStep, QUIZ_STEPS.length);
   }, [currentStep]);
 
   const goNext = useCallback(() => {
     if (isAnimating) return;
+
+    // Track section completion before moving to next
+    quizTracker.trackSectionComplete(step.id, currentStep, QUIZ_STEPS.length,
+      step.type === "multi" || step.type === "grid" || step.type === "skin-problems" ? selectedOptions : answers[step.id]);
+
     if (step.type === "multi" || step.type === "grid" || step.type === "skin-problems") {
       setAnswers((prev) => ({ ...prev, [step.id]: selectedOptions }));
     }
     setDirection(1);
     setIsAnimating(true);
     setTimeout(() => {
-      setCurrentStep((prev) => Math.min(prev + 1, QUIZ_STEPS.length - 1));
+      setCurrentStep((prev) => {
+        const nextStep = Math.min(prev + 1, QUIZ_STEPS.length - 1);
+        // Check if quiz is complete
+        if (nextStep === QUIZ_STEPS.length - 1) {
+          quizTracker.trackQuizComplete(QUIZ_STEPS.length);
+        }
+        return nextStep;
+      });
       setIsAnimating(false);
     }, 300);
-  }, [currentStep, selectedOptions, step, isAnimating]);
+  }, [currentStep, selectedOptions, step, isAnimating, answers]);
 
   const goBack = useCallback(() => {
     if (currentStep === 0 || isAnimating) return;
@@ -294,15 +265,26 @@ export default function QuizPage() {
   const selectSingle = useCallback(
     (option: string) => {
       if (isAnimating) return;
+
+      // Track section completion with the selected answer
+      quizTracker.trackSectionComplete(step.id, currentStep, QUIZ_STEPS.length, option);
+
       setAnswers((prev) => ({ ...prev, [step.id]: option }));
       setDirection(1);
       setIsAnimating(true);
       setTimeout(() => {
-        setCurrentStep((prev) => Math.min(prev + 1, QUIZ_STEPS.length - 1));
+        setCurrentStep((prev) => {
+          const nextStep = Math.min(prev + 1, QUIZ_STEPS.length - 1);
+          // Check if quiz is complete
+          if (nextStep === QUIZ_STEPS.length - 1) {
+            quizTracker.trackQuizComplete(QUIZ_STEPS.length);
+          }
+          return nextStep;
+        });
         setIsAnimating(false);
       }, 500);
     },
-    [step, isAnimating]
+    [step, isAnimating, currentStep]
   );
 
   const toggleMulti = useCallback((option: string) => {
@@ -328,10 +310,10 @@ export default function QuizPage() {
     return (
       <div
         data-testid="quiz-header"
-        className="sticky top-0 z-50 px-4 pt-3 pb-3"
+        className="sticky top-0 z-50 px-4 pt-1 pb-1"
         style={{ background: HEADER_BG }}
       >
-        <div className="flex items-center justify-between mb-3">
+        <div className="flex items-center justify-between mb-1">
           <div className="flex items-center w-8">
             {currentStep > 0 && (
               <button
@@ -343,11 +325,8 @@ export default function QuizPage() {
               </button>
             )}
           </div>
-          <span className="text-white/70 text-sm font-semibold">{step.section || "Progresso"}</span>
+          <span className="text-white/70 text-xs font-semibold">{step.section || "Progresso"}</span>
           <div className="flex items-center gap-1.5">
-            <span className="text-white/50 text-xs font-medium tracking-wide whitespace-nowrap">#1 em Definição Facial</span>
-            <Star className="w-3.5 h-3.5 fill-current" style={{ color: AMBER }} />
-            <span className="font-bold text-sm" style={{ color: AMBER }}>4.8</span>
           </div>
         </div>
         {/* 6-segment progress bar */}
@@ -356,7 +335,7 @@ export default function QuizPage() {
             const segIdx = i + 1;
             const filled = segIdx < activeSegment ? 1 : segIdx === activeSegment ? segmentFill : 0;
             return (
-              <div key={i} className="flex-1 h-1 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.15)" }}>
+              <div key={i} className="flex-1 h-0.5 rounded-full overflow-hidden" style={{ background: "rgba(255,255,255,0.15)" }}>
                 <motion.div
                   className="h-full rounded-full"
                   style={{ background: LIGHT_GREEN }}
@@ -371,102 +350,144 @@ export default function QuizPage() {
     );
   };
 
-  const renderWelcome = () => (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col items-center min-h-screen"
-    >
-      {/* Hero image */}
-      <div className="relative w-full">
-        <div className="w-full overflow-hidden" style={{ maxHeight: "55vh" }}>
-          <img
-            src="/images/mimika/welcome-loader-photos-2.webp"
-            alt="Rostos felizes"
-            width={750}
-            height={820}
-            className="w-full object-cover object-top"
-            style={{ maxHeight: "55vh" }}
-          />
-        </div>
-        {/* Gradient overlay at bottom of image */}
-        <div
-          className="absolute bottom-0 left-0 right-0 h-24"
-          style={{ background: `linear-gradient(to bottom, transparent, ${DARK_BG})` }}
-        />
-        {/* Top badge */}
-        <div className="absolute top-4 left-0 right-0 flex justify-center">
-          <div
-            className="inline-flex items-center gap-1.5 rounded-full px-4 py-1.5"
-            style={{ background: HEADER_BG, border: `1px solid ${LIGHT_GREEN}40` }}
-          >
-            <Star className="w-3.5 h-3.5 fill-current" style={{ color: AMBER }} />
-            <span className="text-xs font-bold tracking-wide" style={{ color: AMBER }}>#1 em Definição Facial</span>
-            <span className="font-bold text-xs text-white/80">4.8</span>
-          </div>
-        </div>
-      </div>
+  const renderWelcome = () => {
+    const handleGenderSelect = (gender: string) => {
+      setAnswers((prev) => ({ ...prev, gender: gender }));
+      setDirection(1);
+      setIsAnimating(true);
 
-      <div className="w-full px-6 pb-8 pt-2 flex flex-col items-center">
+      // Track the selection
+      quizTracker.trackSectionComplete('welcome', 0, QUIZ_STEPS.length, gender);
+
+      setTimeout(() => {
+        setCurrentStep(1); // Go to age question (index 1)
+        setIsAnimating(false);
+      }, 500);
+    };
+
+    return (
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        className="flex flex-col justify-center min-h-screen px-6 py-8 max-w-md mx-auto"
+      >
+        {/* Headline Bencivenga Style */}
         <motion.h1
-          initial={{ y: 20, opacity: 0 }}
+          initial={{ y: 10, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.3, duration: 0.6 }}
-          className="text-3xl font-bold text-white text-center mb-3 leading-tight"
+          transition={{ delay: 0.1 }}
+          className="text-3xl sm:text-4xl font-black text-white text-center mb-6 leading-tight"
           data-testid="text-welcome-title"
         >
-          Seu rosto pode parecer{" "}
-          <span style={{ color: LIGHT_GREEN }}>10 anos mais jovem</span>
-          {" "}em apenas 21 dias
+          Por que{" "}
+          <span className="text-red-400">dormir de lado</span>{" "}
+          está{" "}
+          <span className="text-red-400">deformando seu rosto</span>
+          <br />
+          <span className="text-lg sm:text-xl text-white/80 font-semibold whitespace-nowrap">
+            (e como 3 exercícios simples revertem isso)
+          </span>
         </motion.h1>
 
+        {/* Subheadline Bencivenga */}
         <motion.p
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.45, duration: 0.6 }}
-          className="text-white/55 text-base text-center mb-6 max-w-sm"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="text-white/80 text-lg text-center mb-10"
         >
-          O diagnóstico leva 2 minutos. O protocolo personalizado transforma em 21 dias.
+          Essa descoberta pode{" "}
+          <span className="text-white font-semibold">
+            reverter danos faciais
+          </span>{" "}
+          em 90 segundos por dia
         </motion.p>
 
+        {/* Call to Action Simples */}
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+          className="text-white/70 text-base text-center mb-8"
+        >
+          Qual seu gênero?
+        </motion.p>
+
+        {/* Gender Selection - HALBERT: "Choose Your Path" */}
         <motion.div
           initial={{ y: 20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.6, duration: 0.6 }}
-          className="grid grid-cols-3 gap-3 mb-6 w-full max-w-xs"
+          transition={{ delay: 0.6 }}
+          className="flex gap-4 w-full"
         >
-          {[
-            { icon: <Users className="w-5 h-5" />, label: "2M+ pessoas" },
-            { icon: <Star className="w-5 h-5" />, label: "4.8 estrelas" },
-            { icon: <Award className="w-5 h-5" />, label: "Método #1" },
-          ].map((item, i) => (
-            <div key={i} className="flex flex-col items-center gap-1.5 p-3 rounded-xl" style={{ background: CARD_BG, border: `1px solid ${CARD_BORDER}` }}>
-              <div style={{ color: LIGHT_GREEN }}>{item.icon}</div>
-              <span className="text-white/70 text-xs font-medium">{item.label}</span>
-            </div>
-          ))}
+          <div className="flex-1 flex flex-col items-center">
+            <button
+              onClick={() => handleGenderSelect("Feminino")}
+              className="w-full relative overflow-hidden rounded-2xl transition-all duration-300 border-2 group h-40 mb-3"
+              style={{
+                borderColor: 'rgba(255,255,255,0.15)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 8px 25px rgba(255,255,255,0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              <img
+                src="/images/mulher-novo.webp"
+                alt="Feminino"
+                className="absolute inset-0 w-full h-full object-cover rounded-2xl group-hover:scale-105 transition-transform duration-300"
+                style={{ objectPosition: '50% 20%' }}
+              />
+            </button>
+            <p className="text-white font-bold text-lg">Feminino</p>
+          </div>
+
+          <div className="flex-1 flex flex-col items-center">
+            <button
+              onClick={() => handleGenderSelect("Masculino")}
+              className="w-full relative overflow-hidden rounded-2xl transition-all duration-300 border-2 group h-40 mb-3"
+              style={{
+                borderColor: 'rgba(255,255,255,0.15)',
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.4)';
+                e.currentTarget.style.transform = 'translateY(-2px)';
+                e.currentTarget.style.boxShadow = '0 8px 25px rgba(255,255,255,0.1)';
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)';
+                e.currentTarget.style.transform = 'translateY(0)';
+                e.currentTarget.style.boxShadow = 'none';
+              }}
+            >
+              <img
+                src="/images/homem-novo.webp"
+                alt="Masculino"
+                className="absolute inset-0 w-full h-full object-cover rounded-2xl group-hover:scale-105 transition-transform duration-300"
+                style={{ objectPosition: '50% 20%' }}
+              />
+            </button>
+            <p className="text-white font-bold text-lg">Masculino</p>
+          </div>
         </motion.div>
 
-        <motion.div
-          initial={{ y: 20, opacity: 0 }}
-          animate={{ y: 0, opacity: 1 }}
-          transition={{ delay: 0.75, duration: 0.6 }}
-          className="w-full"
+        <motion.p
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.7 }}
+          className="text-white/30 text-xs text-center mt-4"
         >
-          <button
-            data-testid="button-start-quiz"
-            onClick={goNext}
-            className="w-full h-14 text-lg font-bold rounded-2xl text-white transition-all active:scale-95"
-            style={{ background: BTN_GREEN }}
-          >
-            Fazer meu diagnóstico grátis
-            <ArrowRight className="w-5 h-5 ml-2" />
-          </button>
-          <p className="text-white/50 text-xs text-center mt-3">Leva apenas 2 minutos • 100% gratuito</p>
-        </motion.div>
-      </div>
-    </motion.div>
-  );
+          Teste gratuito • 90 segundos • Sem cadastro
+        </motion.p>
+      </motion.div>
+    );
+  };
 
   useEffect(() => {
     if (step.type === "loading") {
@@ -586,7 +607,7 @@ export default function QuizPage() {
                 {opt.image ? (
                   <div className="w-full rounded-xl overflow-hidden mb-2 bg-white" style={{ height: '120px' }}>
                     <img
-                      src={(opt.imageMale && answers['gender'] === 'Homem') ? opt.imageMale : opt.image}
+                      src={(opt.imageMale && answers['gender'] === 'Masculino') ? opt.imageMale : opt.image}
                       alt={opt.label}
                       className="w-full h-full object-cover object-bottom"
                       loading="lazy"
@@ -661,7 +682,7 @@ export default function QuizPage() {
           >
             <div className="relative w-64">
               <img
-                src={answers['gender'] === 'Homem'
+                src={answers['gender'] === 'Masculino'
                   ? "/images/nosso-quiz/masculino/seu-mapa-facial-foi-gerado.webp"
                   : "/images/nosso-quiz/feminino/seu-mapa-facial-foi-gerado.webp"}
                 alt="Zonas faciais"
@@ -781,14 +802,14 @@ export default function QuizPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="w-full rounded-2xl overflow-hidden mb-6 border border-white/10"
+            className="w-full rounded-2xl overflow-hidden mb-4 border border-white/10"
           >
             <img
-              src={answers['gender'] === 'Homem'
+              src={answers['gender'] === 'Masculino'
                 ? "/images/nosso-quiz/masculino/isso-nao-e-so-estetica.webp"
                 : "/images/nosso-quiz/feminino/isso-nao-e-so-estetica.webp"}
               alt="Antes e depois"
-              className="w-full h-auto object-contain"
+              className="w-full max-h-48 object-contain"
             />
           </motion.div>
         )}
@@ -797,12 +818,12 @@ export default function QuizPage() {
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.5 }}
-            className="w-full rounded-2xl overflow-hidden mb-6 border border-white/10"
+            className="w-full rounded-2xl overflow-hidden mb-4 border border-white/10"
           >
             <img
-              src={(step.statementImageMale && answers['gender'] === 'Homem') ? step.statementImageMale : step.statementImage}
+              src={(step.statementImageMale && answers['gender'] === 'Masculino') ? step.statementImageMale : step.statementImage}
               alt="Rosto moldável"
-              className="w-full h-auto object-contain"
+              className="w-full max-h-48 object-contain"
             />
           </motion.div>
         )}
@@ -855,19 +876,23 @@ export default function QuizPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.5 }}
-            className="w-full space-y-3 mb-8"
+            className="w-full space-y-1 mb-4"
           >
-            {[
-              { label: "Exercícios de Face Yoga", pct: 87 },
-              { label: "Ioga Facial", pct: 73 },
-              { label: "Aptidão Facial", pct: 64 },
-            ].map((item, i) => (
+            {(answers['gender'] === 'Feminino' ? [
+              { label: "Contorno das Bochechas", pct: 94 },
+              { label: "Redução de Papada", pct: 89 },
+              { label: "Simetria Facial", pct: 86 },
+            ] : [
+              { label: "Definição da Mandíbula", pct: 93 },
+              { label: "Contorno dos Olhos", pct: 87 },
+              { label: "Simetria Facial", pct: 84 },
+            ]).map((item, i) => (
               <div key={i}>
-                <div className="flex justify-between mb-1">
-                  <span className="text-white/70 text-sm">{item.label}</span>
-                  <span className="text-sm font-bold" style={{ color: LIGHT_GREEN }}>{item.pct}%</span>
+                <div className="flex justify-between mb-0.5">
+                  <span className="text-white/70 text-xs">{item.label}</span>
+                  <span className="text-xs font-bold" style={{ color: LIGHT_GREEN }}>{item.pct}%</span>
                 </div>
-                <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
+                <div className="w-full h-1.5 bg-white/10 rounded-full overflow-hidden">
                   <motion.div
                     className="h-full rounded-full"
                     style={{ background: BTN_GREEN }}
@@ -896,7 +921,7 @@ export default function QuizPage() {
 
 
   const renderTestimonials = () => {
-    const isMale = answers['gender'] === 'Homem';
+    const isMale = answers['gender'] === 'Masculino';
     const quizTestimonials = isMale
       ? [
           { name: "Carlos M.", age: "38 anos", stars: 5, img: "/images/wise/13V5l-argumentos-1.webp", text: "Em 3 semanas meu maxilar ficou visivelmente mais definido. Minha esposa notou antes de mim! O protocolo é simples e encaixa na rotina sem esforço." },
@@ -1015,7 +1040,7 @@ export default function QuizPage() {
   }, [goNext]);
 
   const renderSelfie = () => (
-    <div className="px-5 pt-8 pb-6 flex flex-col items-center min-h-[80vh] justify-center">
+    <div className="px-5 pt-6 pb-6 flex flex-col items-center min-h-[80vh] justify-center">
       <input
         ref={fileInputRef}
         type="file"
@@ -1030,13 +1055,13 @@ export default function QuizPage() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="relative mb-8"
+            className="relative mb-6"
           >
             <div
-              className="w-32 h-32 rounded-full flex items-center justify-center"
+              className="w-28 h-28 rounded-full flex items-center justify-center"
               style={{ background: `${BTN_GREEN}30`, border: `2px solid ${LIGHT_GREEN}40` }}
             >
-              <ScanFace className="w-16 h-16" style={{ color: LIGHT_GREEN }} />
+              <ScanFace className="w-14 h-14" style={{ color: LIGHT_GREEN }} />
             </div>
             <PulsingRing delay={0} />
             <PulsingRing delay={0.8} />
@@ -1046,7 +1071,7 @@ export default function QuizPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="text-2xl font-bold text-white text-center mb-3 leading-tight"
+            className="text-xl font-bold text-white text-center mb-2 leading-tight"
           >
             {step.question}
           </motion.h2>
@@ -1055,7 +1080,7 @@ export default function QuizPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-white/50 text-sm text-center mb-8 max-w-xs leading-relaxed"
+            className="text-white/50 text-sm text-center mb-6 max-w-xs leading-relaxed"
           >
             {step.subtitle}
           </motion.p>
@@ -1064,11 +1089,11 @@ export default function QuizPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="w-full max-w-xs space-y-3"
+            className="w-full max-w-xs space-y-2"
           >
             <button
               onClick={() => fileInputRef.current?.click()}
-              className="w-full h-14 text-lg font-bold rounded-2xl text-white transition-all active:scale-95 flex items-center justify-center gap-2"
+              className="w-full h-12 text-base font-bold rounded-2xl text-white transition-all active:scale-95 flex items-center justify-center gap-2"
               style={{ background: BTN_GREEN, boxShadow: `0 8px 28px ${BTN_GREEN}60` }}
             >
               <Camera className="w-5 h-5" /> Tirar selfie
@@ -1082,13 +1107,30 @@ export default function QuizPage() {
           </motion.div>
 
           <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="w-full p-3 rounded-2xl bg-white/5 border border-white/10 mt-4 mb-3"
+          >
+            <p className="text-sm font-semibold text-white mb-2">📍 Por que fazer o diagnóstico?</p>
+            <div className="space-y-1 text-xs text-white/70">
+              <p>• Dormir de lado pressiona e distorce os músculos</p>
+              <p>• Causa flacidez por falta de tônus muscular</p>
+              <p>• Acelera o envelhecimento facial</p>
+            </div>
+            <p className="text-xs mt-2.5 text-green-400 font-semibold">
+              ✅ Vamos identificar onde aplicar os 3 exercícios que revertem esses danos
+            </p>
+          </motion.div>
+
+          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="flex items-center gap-2 mt-6"
+            transition={{ delay: 0.6 }}
+            className="flex items-center gap-2 p-3 bg-black/30 rounded-xl border border-white/20"
           >
-            <Shield className="w-3.5 h-3.5" style={{ color: LIGHT_GREEN }} />
-            <span className="text-white/50 text-xs">Sua foto não é armazenada nem compartilhada</span>
+            <Shield className="w-4 h-4" style={{ color: LIGHT_GREEN }} />
+            <span className="text-white/70 text-sm font-bold">Sua foto não é armazenada nem compartilhada</span>
           </motion.div>
         </>
       )}
@@ -1190,7 +1232,7 @@ export default function QuizPage() {
   );
 
   const renderOffer = () => {
-    const isMale = answers['gender'] === 'Homem';
+    const isMale = answers['gender'] === 'Masculino';
 
     const bonuses = [
       { img: "/images/wise/zhRQX-bonus-01.webp", title: "Guia de Ferramentas Faciais", desc: "Gua Sha, roller facial e mais ferramentas na palma da sua mão.", value: "R$ 47" },
@@ -1198,6 +1240,12 @@ export default function QuizPage() {
       { img: isMale ? "/images/wise/5uQgD-bonus-03.webp" : "/images/wise/checklist-feminina.webp", title: isMale ? "Checklist de Presença Masculina" : "Checklist de Presença Feminina", desc: "Tudo que você precisa para transmitir confiança e presença.", value: "R$ 67" },
       { img: "/images/wise/L03sj-bonus-04.webp", title: "Plano de Manutenção Pós 21 Dias", desc: "Mantenha os resultados para sempre com esse guia de rotina.", value: "R$ 67" },
     ];
+
+    const handleOfferClick = () => {
+      const offerUrl = "https://checkout.protocolotsr.shop/VCCL1O8SCVP1";
+      quizTracker.trackOfferClick(offerUrl);
+      window.open(offerUrl, '_blank');
+    };
 
     const scrollToCta = () => {
       document.getElementById('cta-principal')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1219,19 +1267,17 @@ export default function QuizPage() {
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-4" style={{ background: `${AMBER}20`, color: AMBER }}>
           <Clock className="w-3 h-3" /> Oferta expira em {String(countdown.minutes).padStart(2, '0')}:{String(countdown.seconds).padStart(2, '0')}
         </div>
-        <a
-          href="https://checkout.protocolotsr.shop/VCCL1O8SCVP1"
-          target="_blank"
-          rel="noopener noreferrer"
+        <button
+          onClick={handleOfferClick}
           className="flex items-center justify-center gap-2 w-full h-14 rounded-2xl text-white font-bold text-sm sm:text-base px-4 mb-3"
           style={{ background: BTN_GREEN, boxShadow: `0 8px 28px ${BTN_GREEN}60` }}
         >
           QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5 flex-shrink-0" />
-        </a>
+        </button>
         <div className="flex items-center justify-center gap-3">
           <div className="flex items-center gap-1">
             <Shield className="w-3 h-3" style={{ color: LIGHT_GREEN }} />
-            <span className="text-white/40 text-xs">Garantia 7 dias</span>
+            <span className="text-white/40 text-xs">Garantia 90 dias</span>
           </div>
           <div className="flex items-center gap-1">
             <Check className="w-3 h-3" style={{ color: LIGHT_GREEN }} />
@@ -1267,7 +1313,7 @@ export default function QuizPage() {
         <div className="flex items-center justify-center gap-3">
           <div className="flex items-center gap-1">
             <Shield className="w-3 h-3" style={{ color: LIGHT_GREEN }} />
-            <span className="text-white/40 text-xs">Garantia 7 dias</span>
+            <span className="text-white/40 text-xs">Garantia 90 dias</span>
           </div>
           <div className="flex items-center gap-1">
             <Check className="w-3 h-3" style={{ color: LIGHT_GREEN }} />
@@ -1307,10 +1353,10 @@ export default function QuizPage() {
         <div className="flex items-center gap-4 p-5 rounded-2xl"
           style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)' }}
         >
-          <img src="/images/wise/IAxfL-garantia-7-dias.webp" alt="Garantia 7 dias" className="w-20 h-20 object-contain flex-shrink-0" />
+          <img src="/images/wise/garantia-90-dias.png" alt="Garantia 90 dias" className="w-28 h-28 object-contain flex-shrink-0" />
           <div>
-            <p className="text-white font-bold text-sm mb-1">Garantia de 7 Dias de Devolução</p>
-            <p className="text-white/50 text-xs leading-relaxed mb-2">Se em 7 dias você não estiver satisfeito com os resultados, devolvemos 100% do seu dinheiro. Sem perguntas, sem burocracia.</p>
+            <p className="text-white font-bold text-sm mb-1">Garantia Incondicional de 90 Dias</p>
+            <p className="text-white/50 text-xs leading-relaxed mb-2">Se em 90 dias você não estiver completamente satisfeito com os resultados, devolvemos 100% do seu dinheiro. Sem perguntas, sem burocracia.</p>
             <p className="text-xs font-bold" style={{ color: LIGHT_GREEN }}>Risco zero. Transformação garantida.</p>
           </div>
         </div>
@@ -1320,9 +1366,8 @@ export default function QuizPage() {
     if (isMale) {
       // ── SCRIPT DE OURO (MASCULINO) ──
       const maleTestimonials = [
-        { img: "/images/nosso-quiz/masculino/novo1.webp", name: "Marcos", age: "32 anos", text: "Achei que era minha genética. Em 10 dias de TSR, minha mandíbula apareceu. Minha namorada perguntou se eu fiz preenchimento." },
-        { img: "/images/nosso-quiz/masculino/novo2.webp", name: "Felipe", age: "27 anos", text: "O inchaço matinal sumiu. Eu parecia um balão nas fotos, agora meu rosto tem ângulo. Valeu cada centavo." },
-        { img: "/images/wise/AqrzV-argumentos-4.webp", name: "Thiago A.", age: "36 anos", text: "São 5 minutos por dia. Em menos de 3 semanas meu rosto ficou completamente diferente — mais definido, mais jovem, mais presente." },
+        { img: "/images/nosso-quiz/masculino/novo1.webp", name: "Marcos", age: "32 anos", text: "Em 10 dias minha mandíbula apareceu. Minha namorada perguntou se fiz preenchimento." },
+        { img: "/images/nosso-quiz/masculino/novo2.webp", name: "Felipe", age: "27 anos", text: "O inchaço matinal sumiu. Agora meu rosto tem ângulo definido." },
       ];
 
       const maleResultImages = [
@@ -1335,15 +1380,12 @@ export default function QuizPage() {
         { label: "Definição Facial", before: 12, after: 88 },
         { label: "Confiança",        before: 15, after: 85 },
         { label: "Presença",         before: 10, after: 90 },
-        { label: "Auto-estima",      before: 12, after: 88 },
       ];
 
       const maleFaqs = [
-        { q: "Quanto tempo por dia?", a: "Apenas 5 minutos, em qualquer lugar. O protocolo foi desenhado para encaixar na rotina masculina sem esforço." },
-        { q: "Em quanto tempo vejo resultado?", a: "A descompressão linfática é visível nos primeiros 4 dias. A definição óssea — mandíbula e contorno — ocorre entre o dia 14 e 21." },
-        { q: "É seguro?", a: "100% natural, baseado em fisioterapia facial e drenagem avançada. Sem produtos, sem agulhas, sem risco." },
-        { q: "Preciso comprar produtos ou ferramentas?", a: "Não. O protocolo funciona apenas com as mãos. As ferramentas são opcionais e estão cobertas no bônus — mas não são necessárias para ter resultados." },
-        { q: "Funciona para qualquer idade?", a: "Sim. O protocolo é eficaz para todas as idades que buscam eliminar a retenção facial e ganhar definição." },
+        { q: "Quanto tempo por dia?", a: "Apenas 90 segundos por dia. O protocolo foi desenhado para encaixar na rotina masculina sem esforço." },
+        { q: "Em quanto tempo vejo resultado?", a: "Os primeiros resultados aparecem em 4-7 dias. A definição completa ocorre em 21 dias." },
+        { q: "Preciso comprar algo extra?", a: "Não. Os 3 exercícios funcionam apenas com as mãos, sem produtos ou ferramentas." },
       ];
 
       return (
@@ -1361,12 +1403,12 @@ export default function QuizPage() {
             <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
               className="text-2xl font-bold text-white leading-tight mb-2"
             >
-              Elimine a Retenção Facial e tenha uma <span style={{ color: LIGHT_GREEN }}>Mandíbula Definida</span> em apenas 21 dias
+              Reverta os danos do <span style={{ color: LIGHT_GREEN }}>sono lateral</span> e recupere a definição facial em 90 segundos por dia
             </motion.h1>
             <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
               className="text-white/50 text-sm mb-5 leading-relaxed"
             >
-              Baseado nas suas respostas, você tem alto potencial de definição.
+              3 exercícios simples que desfazem a deformação causada por dormir de lado.
             </motion.p>
 
             {/* CTA primeira dobra */}
@@ -1378,7 +1420,7 @@ export default function QuizPage() {
               >
                 QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5 flex-shrink-0" />
               </button>
-              <p className="text-white/50 text-xs mt-2 text-center">Garantia 7 dias • Acesso imediato • R$39,90</p>
+              <p className="text-white/50 text-xs mt-2 text-center">Garantia 90 dias • Acesso imediato • R$39,90</p>
             </motion.div>
 
             <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.35 }}
@@ -1411,17 +1453,15 @@ export default function QuizPage() {
 
           {/* ── O QUE TERÁ ACESSO ── */}
           <div className="px-5 mb-8">
-            <h2 className="text-lg font-bold text-white mb-5 text-center">O que você terá acesso?</h2>
+            <h2 className="text-lg font-bold text-white mb-5 text-center">Os 3 Exercícios Que Revertem os Danos</h2>
             <div className="space-y-3">
               {[
-                { title: "Protocolo PDF Passo a Passo", desc: "Guia completo com cada exercício ilustrado em detalhe" },
-                { title: "Plano Personalizado de 21 Dias", desc: "Cronograma dia a dia para encaixar na sua rotina" },
-                { title: "Trilha da Transformação Facial", desc: "Sequência completa para definição facial em 21 dias" },
-                { title: "Técnicas de Drenagem Linfática Facial", desc: "Elimine a retenção e o inchaço de forma natural" },
-                { title: "Exercícios de Definição de Mandíbula", desc: "Ative o masseter e o platisma para marcar o contorno" },
-                { title: "Guia de Hábitos Potencializadores", desc: "Nutrição, sono e hidratação para maximizar resultados" },
-                { title: "Checklist Diário de Progresso", desc: "Acompanhe sua evolução dia a dia" },
-                { title: "Suporte Dedicado", desc: "Tire suas dúvidas e receba apoio durante a jornada" },
+                { title: "Exercício #1: Descompressão Temporal", desc: "Desfaz a pressão acumulada pela posição lateral durante o sono" },
+                { title: "Exercício #2: Reposicionamento Facial", desc: "Realinha os músculos e tecidos deformados pelo peso da cabeça" },
+                { title: "Exercício #3: Ativação do Contorno", desc: "Reativa a circulação e redefine as linhas faciais naturais" },
+                { title: "Protocolo Completo 90 Segundos", desc: "Sequência exata para reverter danos em apenas 90 segundos por dia" },
+                { title: "Guia de Posicionamento Correto", desc: "Como dormir para evitar novos danos faciais" },
+                { title: "Cronograma de 21 Dias", desc: "Plano dia a dia para máximos resultados" },
               ].map((item, i) => (
                 <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.08 * i }}
                   className="flex items-start gap-3 p-3 rounded-xl"
@@ -1445,13 +1485,13 @@ export default function QuizPage() {
               <p className="text-center text-base font-bold text-white mb-4">Para quem é o Protocolo de 21 dias?</p>
               <div className="space-y-2.5">
                 {[
-                  "Quer eliminar a papada e o inchaço facial",
-                  "Busca uma mandíbula mais definida e marcada",
-                  "Quer transmitir mais confiança e presença",
-                  "Não tem tempo para procedimentos caros ou invasivos",
-                  "Tem 5–10 minutos disponíveis por dia",
-                  "Prefere métodos naturais, sem cirurgia ou botox",
-                  "Quer resultados visíveis em poucas semanas",
+                  "Dorme de lado e percebe deformação facial",
+                  "Nota assimetria ou achatamento de um lado do rosto",
+                  "Quer reverter danos causados pela posição do sono",
+                  "Busca solução natural sem procedimentos invasivos",
+                  "Tem apenas 90 segundos por dia disponíveis",
+                  "Prefere exercícios simples baseados em ciência",
+                  "Quer recuperar a simetria e definição natural",
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-2.5">
                     <Check className="w-4 h-4 flex-shrink-0" style={{ color: LIGHT_GREEN }} />
@@ -1514,9 +1554,6 @@ export default function QuizPage() {
             </div>
           </div>
 
-          {/* ── BÔNUS ── */}
-          {bonusSection}
-
           <div className="px-5 mb-6">{ctaBlockScroll}</div>
 
           {/* ── GARANTIA ── */}
@@ -1553,11 +1590,8 @@ export default function QuizPage() {
 
     // ── OFERTA FEMININA ──
     const femaleTestimonials = [
-      { beforeAfter: "/images/nosso-quiz/feminino/depoimentos7.webp", img: "/images/nosso-quiz/feminino/dep1.webp", name: "Ana P.", age: "32 anos", text: "Eu evitava tirar fotos porque não gostava do meu rosto. Depois do protocolo, meu rosto ficou muito mais contornado e definido." },
-      { img: "/images/nosso-quiz/feminino/dep2.webp", name: "Mariana S.", age: "27 anos", text: "Logo na primeira semana já notei redução do inchaço. Continuei seguindo o protocolo e agora tenho o rosto que sempre quis." },
-      { img: "/images/nosso-quiz/feminino/dep3.webp", name: "Juliana T.", age: "38 anos", text: "Sempre tive um rosto mais redondo e isso me incomodava. Em 10 dias já dava para notar diferença. Com 21 dias, meu contorno está definido de verdade!" },
-      { img: "/images/nosso-quiz/feminino/dep4.webp", name: "Camila R.", age: "34 anos", text: "Achei que seria complicado, mas é super simples. 15 minutos por dia e os resultados aparecem rápido. Meu rosto ficou muito mais bonito. Recomendo!" },
-      { img: "/images/nosso-quiz/feminino/dep5.webp", name: "Fernanda G.", age: "41 anos", text: "No começo achei que era bobagem, mas resolvi testar. Depois de 2 semanas, minha amiga perguntou se eu tinha mudado algo. Funcionou mesmo!" },
+      { img: "/images/nosso-quiz/feminino/dep1.webp", name: "Ana P.", age: "32 anos", text: "Depois do protocolo, meu rosto ficou muito mais contornado e definido." },
+      { img: "/images/nosso-quiz/feminino/dep2.webp", name: "Mariana S.", age: "27 anos", text: "Na primeira semana já notei redução do inchaço. Agora tenho o rosto que sempre quis." },
     ] as Array<{ img?: string; beforeAfter?: string; name: string; age: string; text: string }>;
 
     const femaleResultImages = [
@@ -1571,16 +1605,14 @@ export default function QuizPage() {
     const femaleMetrics = [
       { label: "Atratividade", before: 15, after: 85 },
       { label: "Confiança",    before: 10, after: 90 },
-      { label: "Respeito",     before: 15, after: 85 },
       { label: "Auto-estima",  before: 10, after: 90 },
     ];
 
     const femaleFaqs = [
-      { q: "Nunca fiz exercício facial antes. É adequado para iniciantes?", a: "Sim! O protocolo foi desenvolvido para iniciantes, com passo a passo ilustrado, demonstrações detalhadas e linguagem simples para uma progressão segura." },
-      { q: "Quanto tempo preciso me dedicar por dia?", a: "10 a 15 minutos por dia é o suficiente. Muitos notam redução do inchaço e definição visível já na primeira semana." },
-      { q: "Preciso comprar produtos ou ferramentas caras?", a: "Não. O protocolo funciona apenas com as mãos. As ferramentas são opcionais e estão cobertas no bônus — mas não são necessárias para ter resultados." },
-      { q: "Funciona para qualquer idade?", a: "Sim. O protocolo é eficaz para todas as idades que buscam eliminar a retenção facial e ganhar definição." },
-      { q: "Posso cancelar e obter reembolso?", a: "Sim. Você tem 7 dias de garantia total. Basta solicitar e devolvemos 100% do valor, sem perguntas." },
+      { q: "Quanto tempo por dia?", a: "Apenas 90 segundos por dia. Os 3 exercícios são rápidos e simples de fazer." },
+      { q: "Em quanto tempo vejo resultado?", a: "Os primeiros resultados aparecem em 4-7 dias. A transformação completa em 21 dias." },
+      { q: "Preciso comprar algo extra?", a: "Não. Os exercícios funcionam apenas com as mãos, sem produtos ou ferramentas." },
+      { q: "Tenho garantia?", a: "Sim. 90 dias de garantia incondicional. Se não gostar, devolvemos 100% do valor." },
     ];
 
     return (
@@ -1597,12 +1629,12 @@ export default function QuizPage() {
           <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             className="text-2xl font-bold text-white leading-tight mb-2"
           >
-            Elimine a Retenção Facial e tenha um <span style={{ color: LIGHT_GREEN }}>Rosto Definido</span> em apenas 21 dias
+            Reverta os danos do <span style={{ color: LIGHT_GREEN }}>sono lateral</span> e recupere a beleza natural em 90 segundos por dia
           </motion.h1>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}
             className="text-white/50 text-sm mb-5 leading-relaxed"
           >
-            Baseado nas suas respostas, você tem alto potencial de definição.
+            3 exercícios simples que desfazem a deformação causada por dormir de lado.
           </motion.p>
 
           {/* CTA primeira dobra */}
@@ -1614,13 +1646,13 @@ export default function QuizPage() {
             >
               QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5 flex-shrink-0" />
             </button>
-            <p className="text-white/50 text-xs mt-2 text-center">Garantia 7 dias • Acesso imediato • R$19,99</p>
+            <p className="text-white/50 text-xs mt-2 text-center">Garantia 90 dias • Acesso imediato • R$39,90</p>
           </motion.div>
 
           <motion.div initial={{ opacity: 0, scale: 0.97 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.35 }}
             className="rounded-2xl overflow-hidden border border-white/10 mb-6"
           >
-            <img src="/images/nosso-quiz/feminino/depoimentos6.webp" alt="Antes e depois" className="w-full h-auto" />
+            <img src="/images/nosso-quiz/feminino/seu-rosto-e-moldavel.webp" alt="Rosto moldável" className="w-full h-auto" />
           </motion.div>
 
           {/* Métricas */}
@@ -1647,17 +1679,15 @@ export default function QuizPage() {
 
         {/* O que terá acesso */}
         <div className="px-5 mb-8">
-          <h2 className="text-lg font-bold text-white mb-5 text-center">O que você terá acesso?</h2>
+          <h2 className="text-lg font-bold text-white mb-5 text-center">Os 3 Exercícios Que Revertem os Danos</h2>
           <div className="space-y-3">
             {[
-              { title: "Protocolo PDF Passo a Passo", desc: "Guia completo com cada exercício ilustrado em detalhe" },
-              { title: "Plano Personalizado de 21 Dias", desc: "Cronograma dia a dia completo para sua rotina" },
-              { title: "Trilha da Transformação Facial", desc: "Sequência completa para definição facial em 21 dias" },
-              { title: "Técnicas de Drenagem Linfática Facial", desc: "Elimine a retenção e o inchaço de forma natural" },
-              { title: "Massagens de Definição e Contorno", desc: "Defina o maxilar, maçãs do rosto e contorno facial" },
-              { title: "Guia de Hábitos Potencializadores", desc: "Nutrição, sono e hidratação para maximizar resultados" },
-              { title: "Checklist Diário de Progresso", desc: "Acompanhe sua evolução dia a dia" },
-              { title: "Suporte Dedicado", desc: "Tire suas dúvidas e receba apoio durante a jornada" },
+              { title: "Exercício #1: Descompressão Temporal", desc: "Desfaz a pressão acumulada pela posição lateral durante o sono" },
+              { title: "Exercício #2: Reposicionamento Facial", desc: "Realinha os músculos e tecidos deformados pelo peso da cabeça" },
+              { title: "Exercício #3: Ativação do Contorno", desc: "Reativa a circulação e redefine as linhas faciais naturais" },
+              { title: "Protocolo Completo 90 Segundos", desc: "Sequência exata para reverter danos em apenas 90 segundos por dia" },
+              { title: "Guia de Posicionamento Correto", desc: "Como dormir para evitar novos danos faciais" },
+              { title: "Cronograma de 21 Dias", desc: "Plano dia a dia para máximos resultados" },
             ].map((item, i) => (
               <motion.div key={i} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.08 * i }}
                 className="flex items-start gap-3 p-3 rounded-xl"
@@ -1681,13 +1711,13 @@ export default function QuizPage() {
             <p className="text-center text-base font-bold text-white mb-4">🚨 Para quem é o Protocolo de 21 dias?</p>
             <div className="space-y-2.5">
               {[
-                "Quer eliminar a retenção e o inchaço facial",
-                "Busca definição facial natural e eficaz",
-                "Quer melhorar beleza e confiança",
-                "Não tem tempo para procedimentos caros ou invasivos",
-                "Tem 10–15 minutos disponíveis por dia",
-                "Prefere métodos simples, científicos e validados",
-                "Quer resultados visíveis sem cirurgia ou botox",
+                "Dorme de lado e nota deformação no rosto",
+                "Percebe assimetria ou achatamento facial",
+                "Quer reverter danos causados pela posição do sono",
+                "Busca solução natural sem procedimentos invasivos",
+                "Tem apenas 90 segundos por dia disponíveis",
+                "Prefere exercícios simples baseados em ciência",
+                "Quer recuperar a beleza e simetria natural",
               ].map((item, i) => (
                 <div key={i} className="flex items-center gap-2.5">
                   <Check className="w-4 h-4 flex-shrink-0" style={{ color: LIGHT_GREEN }} />
@@ -1742,7 +1772,6 @@ export default function QuizPage() {
           </div>
         </div>
 
-        {bonusSection}
         <div className="px-5 mb-6">{ctaBlockScroll}</div>
         {garantiaSection}
 

@@ -10,7 +10,10 @@
       "Bash(git add -A)",
       "Bash(cd:*)",
       "Bash(curl:*)",
-      "Bash(cp:*)"
+      "Bash(cp:*)",
+      "Bash(npm list:*)",
+      "Bash(vercel --prod --yes)",
+      "Bash(vercel alias:*)"
     ],
     "deny": [],
     "ask": []
