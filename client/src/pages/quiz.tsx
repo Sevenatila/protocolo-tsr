@@ -1308,8 +1308,8 @@ export default function QuizPage() {
       quizTracker.trackOfferClick("inline_checkout");
       setShowCheckout(true);
       setTimeout(() => {
-        document.getElementById('checkout-embutido')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }, 100);
+        document.getElementById('cta-principal')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 50);
     };
 
     const handlePaymentSuccess = () => {
@@ -1339,23 +1339,29 @@ export default function QuizPage() {
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-4" style={{ background: `${AMBER}20`, color: AMBER }}>
           <Clock className="w-3 h-3" /> Oferta expira em {String(countdown.minutes).padStart(2, '0')}:{String(countdown.seconds).padStart(2, '0')}
         </div>
-        <button
-          onClick={handleOfferClick}
-          className="flex items-center justify-center gap-2 w-full h-14 rounded-2xl text-white font-bold text-sm sm:text-base px-4 mb-3"
-          style={{ background: BTN_GREEN, boxShadow: `0 8px 28px ${BTN_GREEN}60` }}
-        >
-          QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5 flex-shrink-0" />
-        </button>
-        <div className="flex items-center justify-center gap-3">
-          <div className="flex items-center gap-1">
-            <Shield className="w-3 h-3" style={{ color: LIGHT_GREEN }} />
-            <span className="text-white/40 text-xs">Garantia 90 dias</span>
-          </div>
-          <div className="flex items-center gap-1">
-            <Check className="w-3 h-3" style={{ color: LIGHT_GREEN }} />
-            <span className="text-white/40 text-xs">Acesso vitalício</span>
-          </div>
-        </div>
+        {!showCheckout ? (
+          <>
+            <button
+              onClick={handleOfferClick}
+              className="flex items-center justify-center gap-2 w-full h-14 rounded-2xl text-white font-bold text-sm sm:text-base px-4 mb-3"
+              style={{ background: BTN_GREEN, boxShadow: `0 8px 28px ${BTN_GREEN}60` }}
+            >
+              QUERO MEU PROTOCOLO AGORA <ArrowRight className="w-5 h-5 flex-shrink-0" />
+            </button>
+            <div className="flex items-center justify-center gap-3">
+              <div className="flex items-center gap-1">
+                <Shield className="w-3 h-3" style={{ color: LIGHT_GREEN }} />
+                <span className="text-white/40 text-xs">Garantia 90 dias</span>
+              </div>
+              <div className="flex items-center gap-1">
+                <Check className="w-3 h-3" style={{ color: LIGHT_GREEN }} />
+                <span className="text-white/40 text-xs">Acesso vitalício</span>
+              </div>
+            </div>
+          </>
+        ) : (
+          <CheckoutEmbutido email={email} amount={29.90} description="Protocolo TSR" onSuccess={handlePaymentSuccess} />
+        )}
       </div>
     );
 
@@ -1376,7 +1382,7 @@ export default function QuizPage() {
           <Clock className="w-3 h-3" /> Oferta expira em {String(countdown.minutes).padStart(2, '0')}:{String(countdown.seconds).padStart(2, '0')}
         </div>
         <button
-          onClick={scrollToCta}
+          onClick={handleOfferClick}
           className="flex items-center justify-center gap-2 w-full h-14 rounded-2xl text-white font-bold text-sm sm:text-base px-4 mb-3"
           style={{ background: BTN_GREEN, boxShadow: `0 8px 28px ${BTN_GREEN}60` }}
         >
@@ -1605,11 +1611,6 @@ export default function QuizPage() {
           </div>
 
           <div className="px-5 mb-8">{ctaBlock}</div>
-          {showCheckout && (
-            <div className="px-5 mb-8">
-              <CheckoutEmbutido email={email} amount={29.90} description="Protocolo TSR" onSuccess={handlePaymentSuccess} />
-            </div>
-          )}
 
           {/* ── PROVA SOCIAL COM CARROSSEL ── */}
           <div className="mb-8">
@@ -1836,11 +1837,6 @@ export default function QuizPage() {
         </div>
 
         <div className="px-5 mb-8">{ctaBlock}</div>
-        {showCheckout && (
-          <div className="px-5 mb-8">
-            <CheckoutEmbutido email={email} amount={29.90} description="Protocolo TSR" onSuccess={handlePaymentSuccess} />
-          </div>
-        )}
 
         {/* Depoimentos */}
         <div className="mb-8">
@@ -1885,11 +1881,6 @@ export default function QuizPage() {
         </div>
 
         <div className="px-5 mb-6">{ctaBlockScroll}</div>
-        {showCheckout && (
-          <div className="px-5 mb-6">
-            <CheckoutEmbutido email={email} amount={29.90} description="Protocolo TSR" onSuccess={handlePaymentSuccess} />
-          </div>
-        )}
         {garantiaSection}
 
         {/* FAQ feminino */}
