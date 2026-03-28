@@ -1252,7 +1252,7 @@ export default function QuizPage() {
       setEmail(val);
       setEmailError('');
       quizTracker.trackSectionComplete(step.id, currentStep, QUIZ_STEPS.length, val);
-      (window as any).utmify?.track('Lead', { content_name: 'Quiz Email' });
+      (window as any).fbq?.('track', 'Lead', { content_name: 'Quiz Email' });
       goNext();
     };
 
@@ -1308,7 +1308,7 @@ export default function QuizPage() {
     const handleOfferClick = () => {
       quizTracker.trackOfferClick("inline_checkout");
       quizTracker.trackCheckoutInitiated();
-      (window as any).utmify?.track('InitiateCheckout', { value: 29.90, currency: 'BRL' });
+      (window as any).fbq?.('track', 'InitiateCheckout', { value: 29.90, currency: 'BRL', content_type: 'product' });
       setShowCheckout(true);
       setTimeout(() => {
         document.getElementById('cta-principal')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -1317,11 +1317,11 @@ export default function QuizPage() {
 
     const handlePaymentSuccess = (payment: any) => {
       quizTracker.trackPurchase(String(payment.id), 29.90, payment.payment_method_id || 'credit_card');
-      (window as any).utmify?.track('Purchase', {
-        orderId: String(payment.id),
-        revenue: 29.90,
+      (window as any).fbq?.('track', 'Purchase', {
+        value: 29.90,
         currency: 'BRL',
-        paymentMethod: payment.payment_method_id || 'credit_card',
+        order_id: String(payment.id),
+        content_type: 'product',
       });
       setPaymentSuccess(true);
       setTimeout(() => {
