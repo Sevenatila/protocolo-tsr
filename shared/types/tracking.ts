@@ -3,7 +3,7 @@ export interface TrackingEvent {
   sessionId: string;
   leadId: string;
   timestamp: Date;
-  eventType: 'section_view' | 'section_complete' | 'quiz_start' | 'quiz_abandon' | 'quiz_complete' | 'offer_click';
+  eventType: 'section_view' | 'section_complete' | 'quiz_start' | 'quiz_abandon' | 'quiz_complete' | 'offer_click' | 'checkout_initiated' | 'pix_generated' | 'pix_pending' | 'purchase';
   sectionId: string;
   sectionIndex: number;
   totalSections: number;

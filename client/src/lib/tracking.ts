@@ -127,6 +127,65 @@ class QuizTracker {
     await this.sendEvent(event);
   }
 
+  async trackCheckoutInitiated(): Promise<void> {
+    const event: Partial<TrackingEvent> = {
+      sessionId: this.sessionId,
+      leadId: this.leadId,
+      timestamp: new Date(),
+      eventType: 'checkout_initiated',
+      sectionId: 'checkout',
+      sectionIndex: -1,
+      totalSections: 0,
+    };
+    this.events.push(event as TrackingEvent);
+    await this.sendEvent(event);
+  }
+
+  async trackPixGenerated(paymentId: string): Promise<void> {
+    const event: Partial<TrackingEvent> = {
+      sessionId: this.sessionId,
+      leadId: this.leadId,
+      timestamp: new Date(),
+      eventType: 'pix_generated',
+      sectionId: 'checkout',
+      sectionIndex: -1,
+      totalSections: 0,
+      metadata: { paymentId },
+    };
+    this.events.push(event as TrackingEvent);
+    await this.sendEvent(event);
+  }
+
+  async trackPixPending(paymentId: string): Promise<void> {
+    const event: Partial<TrackingEvent> = {
+      sessionId: this.sessionId,
+      leadId: this.leadId,
+      timestamp: new Date(),
+      eventType: 'pix_pending',
+      sectionId: 'checkout',
+      sectionIndex: -1,
+      totalSections: 0,
+      metadata: { paymentId },
+    };
+    this.events.push(event as TrackingEvent);
+    await this.sendEvent(event);
+  }
+
+  async trackPurchase(paymentId: string, amount: number, method: string): Promise<void> {
+    const event: Partial<TrackingEvent> = {
+      sessionId: this.sessionId,
+      leadId: this.leadId,
+      timestamp: new Date(),
+      eventType: 'purchase',
+      sectionId: 'checkout',
+      sectionIndex: -1,
+      totalSections: 0,
+      metadata: { paymentId, amount, method },
+    };
+    this.events.push(event as TrackingEvent);
+    await this.sendEvent(event);
+  }
+
   private async sendEvent(event: Partial<TrackingEvent>): Promise<void> {
     try {
       await fetch(this.apiUrl, {

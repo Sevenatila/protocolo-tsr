@@ -6,6 +6,8 @@ interface CheckoutEmbutidoProps {
   amount: number;
   description: string;
   onSuccess: (payment: unknown) => void;
+  onPixGenerated?: (paymentId: string) => void;
+  onPixPending?: (paymentId: string) => void;
 }
 
 const MP_PUBLIC_KEY = 'APP_USR-2481eb47-653e-468f-8ec9-535b8abaadd1';
@@ -15,9 +17,9 @@ const RETRYABLE_CODES = ['cc_rejected_high_risk', 'cc_rejected_call_for_authoriz
 const GREEN = '#1e6b4a';
 const LIGHT_GREEN = '#52c990';
 
-export function CheckoutEmbutido({ email, amount, description, onSuccess }: CheckoutEmbutidoProps) {
+export function CheckoutEmbutido({ email, amount, description, onSuccess, onPixGenerated, onPixPending }: CheckoutEmbutidoProps) {
   const [tab, setTab] = useState<'pix' | 'card'>('pix');
-  const [pixState, setPixState] = useState<'idle' | 'loading' | 'generated'>('idle');
+  const [pixState, setPixState] = useState<'idle' | 'loading' | 'generated' | 'pending'>('idle');
   const [pixData, setPixData] = useState<{ qr_code: string; qr_code_image: string; id: string } | null>(null);
   const [pixTimer, setPixTimer] = useState(600);
   const [copySuccess, setCopySuccess] = useState(false);
@@ -101,7 +103,9 @@ export function CheckoutEmbutido({ email, amount, description, onSuccess }: Chec
       });
       setPixTimer(600);
       setPixState('generated');
+      onPixGenerated?.(data.id);
 
+      let pendingTracked = false;
       pollRef.current = setInterval(async () => {
         try {
           const r = await fetch(`/api/payment-status?id=${data.id}`);
@@ -109,6 +113,12 @@ export function CheckoutEmbutido({ email, amount, description, onSuccess }: Chec
           if (s.status === 'approved') {
             clearIntervals();
             onSuccess(s);
+          } else if (s.status === 'in_process' || s.status === 'pending') {
+            if (!pendingTracked) {
+              pendingTracked = true;
+              setPixState('pending');
+              onPixPending?.(data.id);
+            }
           } else if (s.status === 'rejected' || s.status === 'cancelled') {
             clearIntervals();
             setPixState('idle');
@@ -321,6 +331,20 @@ export function CheckoutEmbutido({ email, amount, description, onSuccess }: Chec
             <div className="flex flex-col items-center py-8 gap-3">
               <div className="w-8 h-8 rounded-full border-2 border-white/20 border-t-white animate-spin" />
               <p className="text-white/50 text-sm">Gerando PIX...</p>
+            </div>
+          )}
+
+          {pixState === 'pending' && pixData && (
+            <div className="flex flex-col items-center gap-4 py-4">
+              <div className="w-12 h-12 rounded-full flex items-center justify-center" style={{ background: `${LIGHT_GREEN}20` }}>
+                <div className="w-6 h-6 rounded-full border-2 border-t-transparent animate-spin" style={{ borderColor: LIGHT_GREEN, borderTopColor: 'transparent' }} />
+              </div>
+              <p className="text-white font-semibold text-base">PIX detectado!</p>
+              <p className="text-white/50 text-sm text-center">Aguardando confirmação do banco...</p>
+              <div className="flex items-center gap-2">
+                <div className="w-2 h-2 rounded-full animate-pulse" style={{ background: LIGHT_GREEN }} />
+                <p className="text-white/40 text-xs">Verificando a cada 5 segundos</p>
+              </div>
             </div>
           )}
 

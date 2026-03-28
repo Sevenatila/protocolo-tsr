@@ -1307,6 +1307,7 @@ export default function QuizPage() {
 
     const handleOfferClick = () => {
       quizTracker.trackOfferClick("inline_checkout");
+      quizTracker.trackCheckoutInitiated();
       (window as any).utmify?.track('InitiateCheckout', { value: 29.90, currency: 'BRL' });
       setShowCheckout(true);
       setTimeout(() => {
@@ -1315,6 +1316,7 @@ export default function QuizPage() {
     };
 
     const handlePaymentSuccess = (payment: any) => {
+      quizTracker.trackPurchase(String(payment.id), 29.90, payment.payment_method_id || 'credit_card');
       (window as any).utmify?.track('Purchase', {
         orderId: String(payment.id),
         revenue: 29.90,
@@ -1368,7 +1370,14 @@ export default function QuizPage() {
             </div>
           </>
         ) : (
-          <CheckoutEmbutido email={emailInput} amount={29.90} description="Protocolo TSR" onSuccess={handlePaymentSuccess} />
+          <CheckoutEmbutido
+            email={emailInput}
+            amount={29.90}
+            description="Protocolo TSR"
+            onSuccess={handlePaymentSuccess}
+            onPixGenerated={(id) => quizTracker.trackPixGenerated(id)}
+            onPixPending={(id) => quizTracker.trackPixPending(id)}
+          />
         )}
       </div>
     );
