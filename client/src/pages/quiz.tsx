@@ -59,13 +59,13 @@ const QUIZ_STEPS: QuizStep[] = [
     id: "face-pain",
     section: "Perfil",
     type: "grid",
-    question: "Qual dessas imagens mais te representa?",
+    question: "O que você percebe no seu rosto?",
     subtitle: "Selecione todas que se aplicam",
     options: [
-      { label: "Rosto sem definição", image: "/images/nosso-quiz/feminino/full_face_fine_lines.webp", imageMale: "/images/nosso-quiz/masculino/rosto-inchado.webp" },
-      { label: "Papada e inchaço", image: "/images/nosso-quiz/feminino/papada-sen-seta.webp", imageMale: "/images/nosso-quiz/masculino/papada.webp" },
-      { label: "Olhar pesado e cansado", image: "/images/nosso-quiz/feminino/olheiras-setas-brancas.webp", imageMale: "/images/nosso-quiz/masculino/olheira.webp" },
-      { label: "Flacidez facial", image: "/images/nosso-quiz/feminino/queixo-setas-vermelha.webp", imageMale: "/images/nosso-quiz/masculino/flacidez-facial.webp" },
+      { label: "Rosto sem definição", emoji: "😶" },
+      { label: "Papada ou inchaço", emoji: "😮" },
+      { label: "Olhar pesado e cansado", emoji: "😴" },
+      { label: "Flacidez e pele caída", emoji: "😞" },
     ],
   },
   {
