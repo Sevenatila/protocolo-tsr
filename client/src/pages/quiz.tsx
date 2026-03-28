@@ -1252,6 +1252,7 @@ export default function QuizPage() {
       setEmail(val);
       setEmailError('');
       quizTracker.trackSectionComplete(step.id, currentStep, QUIZ_STEPS.length, val);
+      (window as any).utmify?.track('Lead', { content_name: 'Quiz Email' });
       goNext();
     };
 
@@ -1306,13 +1307,20 @@ export default function QuizPage() {
 
     const handleOfferClick = () => {
       quizTracker.trackOfferClick("inline_checkout");
+      (window as any).utmify?.track('InitiateCheckout', { value: 29.90, currency: 'BRL' });
       setShowCheckout(true);
       setTimeout(() => {
         document.getElementById('cta-principal')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
       }, 50);
     };
 
-    const handlePaymentSuccess = () => {
+    const handlePaymentSuccess = (payment: any) => {
+      (window as any).utmify?.track('Purchase', {
+        orderId: String(payment.id),
+        revenue: 29.90,
+        currency: 'BRL',
+        paymentMethod: payment.payment_method_id || 'credit_card',
+      });
       setPaymentSuccess(true);
       setTimeout(() => {
         window.scrollTo({ top: 0, behavior: 'smooth' });
