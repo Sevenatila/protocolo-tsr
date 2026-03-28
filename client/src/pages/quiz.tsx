@@ -58,9 +58,8 @@ const QUIZ_STEPS: QuizStep[] = [
   {
     id: "face-pain",
     section: "Perfil",
-    type: "grid",
+    type: "single",
     question: "O que você percebe no seu rosto?",
-    subtitle: "Selecione todas que se aplicam",
     options: [
       { label: "Rosto sem definição", emoji: "😶" },
       { label: "Papada ou inchaço", emoji: "😮" },
