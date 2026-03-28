@@ -82,6 +82,18 @@ const QUIZ_STEPS: QuizStep[] = [
     ],
   },
   {
+    id: "prior-attempts",
+    section: "Perfil",
+    type: "single",
+    question: "Você já tentou alguma coisa antes para mudar isso?",
+    options: [
+      { label: "Gastei com cremes e produtos que não funcionaram", emoji: "💸" },
+      { label: "Tentei exercícios mas larguei", emoji: "🏋️" },
+      { label: "Pesquisei muito mas nunca achei algo confiável", emoji: "🔎" },
+      { label: "Ainda não tentei nada — não sabia por onde começar", emoji: "🚫" },
+    ],
+  },
+  {
     id: "selfie",
     section: "Programa",
     type: "selfie",
