@@ -60,12 +60,12 @@ const QUIZ_STEPS: QuizStep[] = [
     id: "social-impact",
     section: "Perfil",
     type: "single",
-    question: "Você já evitou alguma dessas situações por causa da aparência?",
+    question: "Há quanto tempo você convive com isso?",
     options: [
-      { label: "Tirar fotos ou selfies", emoji: "📸" },
-      { label: "Encontros ou eventos sociais", emoji: "👥" },
-      { label: "Chamadas de vídeo no trabalho", emoji: "💻" },
-      { label: "Nenhuma dessas", emoji: "✨" },
+      { label: "Menos de 6 meses", emoji: "⏳" },
+      { label: "Entre 6 meses e 2 anos", emoji: "📅" },
+      { label: "Mais de 2 anos", emoji: "🗓️" },
+      { label: "Faz tanto tempo que nem lembro como era antes", emoji: "😶" },
     ],
   },
   {
