@@ -1959,7 +1959,7 @@ export default function QuizPage() {
             </motion.div>
           </AnimatePresence>
         </div>
-        {step.type === "offer" && (
+        {step.type === "offer" && !paymentSuccess && (
           <div className="sticky bottom-0 z-50 px-4 py-3" style={{ background: `linear-gradient(to top, ${DARK_BG}, ${DARK_BG}ee, transparent)` }}>
             <button
               onClick={() => document.getElementById('cta-principal')?.scrollIntoView({ behavior: 'smooth', block: 'center' })}
