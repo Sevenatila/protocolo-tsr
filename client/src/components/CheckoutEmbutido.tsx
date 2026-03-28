@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from "react";
+import { motion } from "framer-motion";
 
 interface CheckoutEmbutidoProps {
   email: string;
@@ -261,8 +262,11 @@ export function CheckoutEmbutido({ email, amount, description, onSuccess }: Chec
   const amountFormatted = `R$ ${amount.toFixed(2).replace('.', ',')}`;
 
   return (
-    <div
+    <motion.div
       id="checkout-embutido"
+      initial={{ opacity: 0, y: -16 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4, ease: "easeOut" }}
       style={{
         background: 'rgba(255,255,255,0.04)',
         border: '1px solid rgba(255,255,255,0.12)',
@@ -383,15 +387,15 @@ export function CheckoutEmbutido({ email, amount, description, onSuccess }: Chec
             className="w-full rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm outline-none"
             style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
           />
-          <div className="flex gap-3">
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 }}>
             <input
               placeholder="MM/AA"
               value={cardExpiry}
               onChange={e => setCardExpiry(formatExpiry(e.target.value))}
               inputMode="numeric"
               required
-              className="flex-1 rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm outline-none"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+              className="rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm outline-none w-full"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', minWidth: 0 }}
             />
             <input
               placeholder="CVV"
@@ -399,8 +403,8 @@ export function CheckoutEmbutido({ email, amount, description, onSuccess }: Chec
               onChange={e => setCardCvv(e.target.value.replace(/\D/g, '').substring(0, 4))}
               inputMode="numeric"
               required
-              className="flex-1 rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm outline-none"
-              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)' }}
+              className="rounded-xl px-4 py-3 text-white placeholder-white/30 text-sm outline-none w-full"
+              style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', minWidth: 0 }}
             />
           </div>
           <div>
@@ -445,6 +449,6 @@ export function CheckoutEmbutido({ email, amount, description, onSuccess }: Chec
           </p>
         </form>
       )}
-    </div>
+    </motion.div>
   );
 }
