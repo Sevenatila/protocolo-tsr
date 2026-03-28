@@ -1355,7 +1355,7 @@ export default function QuizPage() {
             </div>
           </>
         ) : (
-          <CheckoutEmbutido email={email} amount={29.90} description="Protocolo TSR" onSuccess={handlePaymentSuccess} />
+          <CheckoutEmbutido email={emailInput} amount={29.90} description="Protocolo TSR" onSuccess={handlePaymentSuccess} />
         )}
       </div>
     );
