@@ -56,18 +56,6 @@ const QUIZ_STEPS: QuizStep[] = [
     ],
   },
   {
-    id: "face-pain",
-    section: "Perfil",
-    type: "single",
-    question: "O que você percebe no seu rosto?",
-    options: [
-      { label: "Rosto sem definição", emoji: "😶" },
-      { label: "Papada ou inchaço", emoji: "😮" },
-      { label: "Olhar pesado e cansado", emoji: "😴" },
-      { label: "Flacidez e pele caída", emoji: "😞" },
-    ],
-  },
-  {
     id: "social-impact",
     section: "Perfil",
     type: "single",
@@ -1100,6 +1088,23 @@ export default function QuizPage() {
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
+            className="w-full p-3 rounded-2xl bg-white/5 border border-white/10 mb-4"
+          >
+            <p className="text-sm font-semibold text-white mb-2">📍 Por que fazer o diagnóstico?</p>
+            <div className="space-y-1 text-xs text-white/70">
+              <p>• Dormir de lado pressiona e distorce os músculos</p>
+              <p>• Causa flacidez por falta de tônus muscular</p>
+              <p>• Acelera o envelhecimento facial</p>
+            </div>
+            <p className="text-xs mt-2.5 text-green-400 font-semibold">
+              ✅ Vamos identificar onde aplicar os 3 exercícios que revertem esses danos
+            </p>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4 }}
             className="w-full max-w-xs space-y-2"
           >
             <button
@@ -1118,27 +1123,10 @@ export default function QuizPage() {
           </motion.div>
 
           <motion.div
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.5 }}
-            className="w-full p-3 rounded-2xl bg-white/5 border border-white/10 mt-4 mb-3"
-          >
-            <p className="text-sm font-semibold text-white mb-2">📍 Por que fazer o diagnóstico?</p>
-            <div className="space-y-1 text-xs text-white/70">
-              <p>• Dormir de lado pressiona e distorce os músculos</p>
-              <p>• Causa flacidez por falta de tônus muscular</p>
-              <p>• Acelera o envelhecimento facial</p>
-            </div>
-            <p className="text-xs mt-2.5 text-green-400 font-semibold">
-              ✅ Vamos identificar onde aplicar os 3 exercícios que revertem esses danos
-            </p>
-          </motion.div>
-
-          <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
-            transition={{ delay: 0.6 }}
-            className="flex items-center gap-2 p-3 bg-black/30 rounded-xl border border-white/20"
+            transition={{ delay: 0.5 }}
+            className="flex items-center gap-2 p-3 bg-black/30 rounded-xl border border-white/20 mt-4"
           >
             <Shield className="w-4 h-4" style={{ color: LIGHT_GREEN }} />
             <span className="text-white/70 text-sm font-bold">Sua foto não é armazenada nem compartilhada</span>
