@@ -2,6 +2,7 @@ import { useState, useCallback, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronLeft, Star, Check, ArrowRight, Sparkles, Clock, Shield, TrendingUp, Award, Users, Loader2, Camera, ScanFace } from "lucide-react";
 import { quizTracker } from "../lib/tracking";
+import { CheckoutEmbutido } from "../components/CheckoutEmbutido";
 
 type QuizAnswer = Record<string, string | string[]>;
 
@@ -100,6 +101,13 @@ const QUIZ_STEPS: QuizStep[] = [
     subtitle: "Sua foto será analisada para criar um protocolo 100% personalizado para o seu rosto.",
   },
   {
+    id: "email",
+    section: "Programa",
+    type: "email",
+    question: "Onde enviamos seu protocolo?",
+    subtitle: "Seu diagnóstico foi concluído. Insira seu email para receber o resultado personalizado.",
+  },
+  {
     id: "personalization",
     section: "Programa",
     type: "info",
@@ -121,7 +129,7 @@ const CARD_BORDER = "rgba(255,255,255,0.1)";
 
 // Segment boundaries for 4-part progress bar
 // Steps: 0 welcome, 1 age, 2 insecurity, 3 face-pain, 4 social-impact,
-// 5 face-goals, 6 explanation, 7 selfie, 8 personalization, 9 offer
+// 5 face-goals, 6 selfie, 7 email, 8 personalization, 9 offer
 const SEGMENTS = [
   { start: 1, end: 4, label: "Perfil" },
   { start: 5, end: 6, label: "Análise" },
@@ -157,6 +165,10 @@ export default function QuizPage() {
   const [answers, setAnswers] = useState<QuizAnswer>({});
   const [selectedOptions, setSelectedOptions] = useState<string[]>([]);
   const [email, setEmail] = useState("");
+  const [emailInput, setEmailInput] = useState("");
+  const [emailError, setEmailError] = useState("");
+  const [showCheckout, setShowCheckout] = useState(false);
+  const [paymentSuccess, setPaymentSuccess] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [resultsSlide, setResultsSlide] = useState(0);
   const [bonusSlide, setBonusSlide] = useState(0);
@@ -1231,6 +1243,57 @@ export default function QuizPage() {
     </div>
   );
 
+  const renderEmail = () => {
+    const submitEmail = () => {
+      const val = emailInput.trim();
+      if (!val) { setEmailError('Insira seu email para continuar.'); return; }
+      const valid = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val);
+      if (!valid) { setEmailError('Email inválido. Verifique e tente novamente.'); return; }
+      setEmail(val);
+      setEmailError('');
+      quizTracker.trackSectionComplete(step.id, currentStep, QUIZ_STEPS.length, val);
+      goNext();
+    };
+
+    return (
+      <div className="px-5 pt-12 pb-6 flex flex-col items-center">
+        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.4 }} className="w-full max-w-sm">
+          <div className="flex justify-center mb-6">
+            <div className="w-16 h-16 rounded-2xl flex items-center justify-center" style={{ background: `${BTN_GREEN}30`, border: `1px solid ${LIGHT_GREEN}40` }}>
+              <svg className="w-8 h-8" viewBox="0 0 24 24" fill="none">
+                <path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2z" stroke={LIGHT_GREEN} strokeWidth="1.5" fill="none" />
+                <path d="M22 6l-10 7L2 6" stroke={LIGHT_GREEN} strokeWidth="1.5" />
+              </svg>
+            </div>
+          </div>
+          <h2 className="text-2xl font-bold text-white text-center mb-2 leading-tight">{step.question}</h2>
+          <p className="text-white/50 text-sm text-center mb-8 leading-relaxed">{step.subtitle}</p>
+          <input
+            type="email"
+            placeholder="seu@email.com"
+            value={emailInput}
+            onChange={e => { setEmailInput(e.target.value); if (emailError) setEmailError(''); }}
+            onKeyDown={e => e.key === 'Enter' && submitEmail()}
+            className="w-full rounded-2xl px-5 py-4 text-white placeholder-white/30 text-base outline-none mb-2"
+            style={{ background: 'rgba(255,255,255,0.07)', border: `1px solid ${emailError ? '#ef4444' : 'rgba(255,255,255,0.12)'}` }}
+            autoFocus
+          />
+          {emailError && <p className="text-red-400 text-sm px-1 mb-3">{emailError}</p>}
+          <button
+            onClick={submitEmail}
+            className="flex items-center justify-center gap-2 w-full h-14 rounded-2xl text-white font-bold text-base mt-2"
+            style={{ background: BTN_GREEN, boxShadow: `0 8px 28px ${BTN_GREEN}60` }}
+          >
+            Ver meu protocolo <ArrowRight className="w-5 h-5" />
+          </button>
+          <p className="text-white/30 text-xs text-center mt-4">
+            Não enviamos spam. Seus dados são protegidos.
+          </p>
+        </motion.div>
+      </div>
+    );
+  };
+
   const renderOffer = () => {
     const isMale = answers['gender'] === 'Masculino';
 
@@ -1242,9 +1305,18 @@ export default function QuizPage() {
     ];
 
     const handleOfferClick = () => {
-      const offerUrl = "https://checkout.protocolotsr.shop/VCCL1O8SCVP1";
-      quizTracker.trackOfferClick(offerUrl);
-      window.open(offerUrl, '_blank');
+      quizTracker.trackOfferClick("inline_checkout");
+      setShowCheckout(true);
+      setTimeout(() => {
+        document.getElementById('checkout-embutido')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }, 100);
+    };
+
+    const handlePaymentSuccess = () => {
+      setPaymentSuccess(true);
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 100);
     };
 
     const scrollToCta = () => {
@@ -1261,9 +1333,9 @@ export default function QuizPage() {
         </div>
         <div className="mb-1">
           <span className="text-3xl font-bold text-white">12x de </span>
-          <span className="text-3xl font-bold" style={{ color: LIGHT_GREEN }}>R$ 5,32</span>
+          <span className="text-3xl font-bold" style={{ color: LIGHT_GREEN }}>R$ 2,49</span>
         </div>
-        <p className="text-white/40 text-sm mb-5">ou <strong className="text-white">R$ 39,90</strong> à vista</p>
+        <p className="text-white/40 text-sm mb-5">ou <strong className="text-white">R$ 29,90</strong> à vista</p>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-4" style={{ background: `${AMBER}20`, color: AMBER }}>
           <Clock className="w-3 h-3" /> Oferta expira em {String(countdown.minutes).padStart(2, '0')}:{String(countdown.seconds).padStart(2, '0')}
         </div>
@@ -1297,9 +1369,9 @@ export default function QuizPage() {
         </div>
         <div className="mb-1">
           <span className="text-3xl font-bold text-white">12x de </span>
-          <span className="text-3xl font-bold" style={{ color: LIGHT_GREEN }}>R$ 5,32</span>
+          <span className="text-3xl font-bold" style={{ color: LIGHT_GREEN }}>R$ 2,49</span>
         </div>
-        <p className="text-white/40 text-sm mb-5">ou <strong className="text-white">R$ 39,90</strong> à vista</p>
+        <p className="text-white/40 text-sm mb-5">ou <strong className="text-white">R$ 29,90</strong> à vista</p>
         <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold mb-4" style={{ background: `${AMBER}20`, color: AMBER }}>
           <Clock className="w-3 h-3" /> Oferta expira em {String(countdown.minutes).padStart(2, '0')}:{String(countdown.seconds).padStart(2, '0')}
         </div>
@@ -1362,6 +1434,36 @@ export default function QuizPage() {
         </div>
       </div>
     );
+
+    if (paymentSuccess) {
+      return (
+        <div className="px-5 pt-16 pb-20 flex flex-col items-center text-center min-h-screen" style={{ background: DARK_BG }}>
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ type: "spring", duration: 0.6 }}
+            className="w-20 h-20 rounded-full flex items-center justify-center mb-6"
+            style={{ background: `${BTN_GREEN}40`, border: `2px solid ${LIGHT_GREEN}` }}
+          >
+            <Check className="w-10 h-10" style={{ color: LIGHT_GREEN }} />
+          </motion.div>
+          <motion.h1 initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
+            className="text-2xl font-bold text-white mb-3"
+          >
+            Pagamento confirmado!
+          </motion.h1>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }}
+            className="text-white/60 text-sm leading-relaxed max-w-xs mb-8"
+          >
+            Seu acesso ao Protocolo TSR foi liberado. Verifique seu email <span className="text-white font-medium">{email}</span> para acessar o conteúdo.
+          </motion.p>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.7 }}
+            className="flex items-center gap-2 px-4 py-3 rounded-2xl"
+            style={{ background: `${BTN_GREEN}20`, border: `1px solid ${LIGHT_GREEN}30` }}
+          >
+            <Shield className="w-4 h-4 flex-shrink-0" style={{ color: LIGHT_GREEN }} />
+            <p className="text-white/60 text-xs">Garantia de 90 dias. Satisfação total ou seu dinheiro de volta.</p>
+          </motion.div>
+        </div>
+      );
+    }
 
     if (isMale) {
       // ── SCRIPT DE OURO (MASCULINO) ──
@@ -1503,6 +1605,11 @@ export default function QuizPage() {
           </div>
 
           <div className="px-5 mb-8">{ctaBlock}</div>
+          {showCheckout && (
+            <div className="px-5 mb-8">
+              <CheckoutEmbutido email={email} amount={29.90} description="Protocolo TSR" onSuccess={handlePaymentSuccess} />
+            </div>
+          )}
 
           {/* ── PROVA SOCIAL COM CARROSSEL ── */}
           <div className="mb-8">
@@ -1729,6 +1836,11 @@ export default function QuizPage() {
         </div>
 
         <div className="px-5 mb-8">{ctaBlock}</div>
+        {showCheckout && (
+          <div className="px-5 mb-8">
+            <CheckoutEmbutido email={email} amount={29.90} description="Protocolo TSR" onSuccess={handlePaymentSuccess} />
+          </div>
+        )}
 
         {/* Depoimentos */}
         <div className="mb-8">
@@ -1773,6 +1885,11 @@ export default function QuizPage() {
         </div>
 
         <div className="px-5 mb-6">{ctaBlockScroll}</div>
+        {showCheckout && (
+          <div className="px-5 mb-6">
+            <CheckoutEmbutido email={email} amount={29.90} description="Protocolo TSR" onSuccess={handlePaymentSuccess} />
+          </div>
+        )}
         {garantiaSection}
 
         {/* FAQ feminino */}
@@ -1813,6 +1930,8 @@ export default function QuizPage() {
         return renderAge();
       case "testimonials":
         return renderTestimonials();
+      case "email":
+        return renderEmail();
       case "selfie":
         return renderSelfie();
       case "offer":
