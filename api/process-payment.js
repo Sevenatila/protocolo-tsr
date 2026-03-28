@@ -32,8 +32,9 @@ export default async function handler(req, res) {
       return res.status(400).json({ error: 'Missing required fields: transaction_amount and token' });
     }
 
-    const notificationUrl = process.env.VERCEL_URL
-      ? `https://${process.env.VERCEL_URL}/api/webhooks`
+    const productionHost = process.env.VERCEL_PROJECT_PRODUCTION_URL || process.env.VERCEL_URL;
+    const notificationUrl = productionHost
+      ? `https://${productionHost}/api/webhooks`
       : undefined;
 
     const paymentData = {
