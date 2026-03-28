@@ -48,11 +48,12 @@ const QUIZ_STEPS: QuizStep[] = [
     id: "insecurity",
     section: "Perfil",
     type: "single",
-    question: "Quando você se olha no espelho, qual desses pensamentos aparece?",
+    question: "Sem filtro: qual desses momentos você já viveu?",
     options: [
-      { label: "Pareço cansada(o) mesmo tendo dormido bem", emoji: "😩" },
-      { label: "Meu rosto parece inchado e sem contorno", emoji: "😔" },
-      { label: "Estou envelhecendo rápido demais", emoji: "😟" },
+      { label: "Deletei uma foto minha antes que alguém visse", emoji: "🗑️" },
+      { label: "Fingi que minha câmera estava com problema pra não aparecer no vídeo", emoji: "📵" },
+      { label: "Alguém me perguntou se eu estava doente — eu não estava", emoji: "😷" },
+      { label: "Me olhei numa foto e não aceitei que era eu", emoji: "🪞" },
     ],
   },
   {
